@@ -1,0 +1,54 @@
+const { createUser } = require("../models/authModel");
+const argon2 = require("argon2");
+const jwt = require("jsonwebtoken");
+const AppError = require("../utils/AppError");
+
+const signToken = (id) => {
+  const token = jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+  return token;
+};
+
+const sendTokenCookie = (token, res) => {
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+
+  res.cookie("jwt", token, cookieOptions);
+};
+
+exports.signup = async (req, res, next) => {
+  try {
+    const newUser = req.body;
+
+    const hash = await argon2.hash(newUser.password);
+    newUser.password = hash;
+    newUser.passwordconfirm = undefined;
+
+    const createdUser = await createUser(newUser);
+
+    if (!createUser) throw AppError("User not created", 400);
+
+    const token = signToken(createdUser.id);
+    sendTokenCookie(token, res);
+
+    createUser.password = undefined;
+
+    res.status(201).json({
+      status: "success",
+      data: createdUser,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.logout = (req, res) => {
+  return res.clearCookie("jwt").status(200).json({
+    message: "You are logged out",
+  });
+};
