@@ -14,3 +14,12 @@ exports.createUser = async (newUser) => {
     return user[0];
 };
 
+exports.getUserByEmail = async (email) => {
+    const users = await sql`
+        SELECT *
+        FROM users
+        WHERE users.email = ${email}
+        LIMIT 1;
+    `;
+    return users[0];
+};

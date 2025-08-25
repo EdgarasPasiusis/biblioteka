@@ -1,4 +1,4 @@
-const { createUser } = require("../models/authModel");
+const { createUser, getUserByEmail } = require("../models/authModel");
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
 const AppError = require("../utils/AppError");
@@ -10,7 +10,7 @@ const signToken = (id) => {
   return token;
 };
 
-const sendTokenCookie = (token, res) => {
+const sendCookie = (token, res) => {
   const cookieOptions = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
@@ -34,7 +34,7 @@ exports.signup = async (req, res, next) => {
     if (!createUser) throw AppError("User not created", 400);
 
     const token = signToken(createdUser.id);
-    sendTokenCookie(token, res);
+    sendCookie(token, res);
 
     createUser.password = undefined;
 
@@ -51,4 +51,24 @@ exports.logout = (req, res) => {
   return res.clearCookie("jwt").status(200).json({
     message: "You are logged out",
   });
+};
+
+exports.login = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const user = await getUserByEmail(email);
+
+    const token = signToken(user.id);
+    sendCookie(token, res);
+
+    user.password = undefined;
+    user.id = undefined;
+
+    res.status(200).json({
+      status: "success",
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
