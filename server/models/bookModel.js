@@ -1,4 +1,4 @@
-const sql = require('../utils/postgres');
+const sql = require("../utils/postgres");
 
 exports.postBook = async (newBook) => {
   const book = await sql`
@@ -24,3 +24,18 @@ exports.deleteBook = async (id) => {
   return book;
 };
 
+exports.updateBook = async (id, updatedBook) => {
+  const book = await sql`
+    update books set ${sql(
+      updatedBook,
+      "category_id",
+      "name",
+      "author",
+      "description",
+      "image"
+    )}
+    where id = ${id}
+    returning *;
+  `;
+  return book[0];
+};
