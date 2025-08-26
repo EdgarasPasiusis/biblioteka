@@ -39,3 +39,11 @@ exports.updateBook = async (id, updatedBook) => {
   `;
   return book[0];
 };
+
+exports.getAllBooks = async () => {
+  const bookList = await sql`
+SELECT *
+FROM books
+    `;
+  return bookList;
+};

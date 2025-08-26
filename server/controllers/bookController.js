@@ -1,4 +1,9 @@
-const { postBook, deleteBook, updateBook } = require("../models/bookModel");
+const {
+  postBook,
+  deleteBook,
+  updateBook,
+  getAllBooks,
+} = require("../models/bookModel");
 const { validationResult } = require("express-validator");
 const AppError = require("../utils/AppError");
 
@@ -58,6 +63,18 @@ exports.updateBook = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       data: updatedBook,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getAllBooks = async (req, res, next) => {
+  try {
+    const bookList = await getAllBooks();
+    res.status(200).json({
+      status: "success",
+      tours: bookList,
     });
   } catch (error) {
     next(error);
