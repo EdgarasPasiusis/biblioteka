@@ -5,7 +5,7 @@ exports.postBook = async (newBook) => {
       INSERT INTO books ${sql(
         newBook,
         "category_id",
-        "name",
+        "title",
         "author",
         "description",
         "image"
@@ -29,7 +29,7 @@ exports.updateBook = async (id, updatedBook) => {
     update books set ${sql(
       updatedBook,
       "category_id",
-      "name",
+      "title",
       "author",
       "description",
       "image"
