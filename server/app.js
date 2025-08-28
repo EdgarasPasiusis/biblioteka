@@ -5,6 +5,7 @@ const userRoutes = require('./routes/userRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const reservationRoutes = require('./routes/reservationRoutes');
 const favoritiesController = require('./routes/favoritesRoutes');
+const commentsController = require('./routes/commentsRoutes');
 const app = express();
 
 app.use(express.json());
@@ -20,5 +21,6 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/categorys', categoryRoutes);
 app.use('/api/v1/reservations', reservationRoutes);
 app.use('/api/v1/favorites', favoritiesController);
+app.use('/api/v1/comments', commentsController);
 
 module.exports = app;
