@@ -57,3 +57,12 @@ exports.searchUsers = async ({ email }) => {
 
   return result;
 };
+
+exports.getUserByID = async (id) => {
+  const user = await sql`
+    SELECT *
+    FROM users
+    WHERE users.id = ${id}
+    `;
+  return user;
+};

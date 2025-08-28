@@ -4,6 +4,7 @@ const {
   updateUser,
   deleteUser,
   searchUsers,
+  getUserByID
 } = require("../models/userModel");
 const argon2 = require("argon2");
 const AppError = require("../utils/AppError");
@@ -101,5 +102,24 @@ exports.searchUsers = async (req, res) => {
   } catch (err) {
     console.error("error", err);
     res.status(500).json({ error: "server error" });
+  }
+};
+
+exports.getUserByID = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const user = await getUserByID(id);
+
+    if (!user) {
+      throw new AppError("User not found", 404);
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: user,
+    });
+  } catch (error) {
+    next(error);
   }
 };

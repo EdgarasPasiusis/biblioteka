@@ -3,6 +3,7 @@ const {
   deleteBook,
   updateBook,
   getAllBooks,
+  getBookByID,
 } = require("../models/bookModel");
 const { validationResult } = require("express-validator");
 const AppError = require("../utils/AppError");
@@ -75,6 +76,25 @@ exports.getAllBooks = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       tours: bookList,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getBookByID = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const book = await getBookByID(id);
+
+    if (!book) {
+      throw new AppError("Book not found", 404);
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: book,
     });
   } catch (error) {
     next(error);

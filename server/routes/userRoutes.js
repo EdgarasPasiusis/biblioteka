@@ -6,10 +6,11 @@ const {
   updateUser,
   deleteUser,
   searchUsers,
+  getUserByID,
 } = require("../controllers/userController");
 
 router.route("/").get(getAllUsers).post(createUser);
-router.route("/:id").put(updateUser).delete(deleteUser);
+router.route("/:id").put(updateUser).delete(deleteUser).get(getUserByID);
 router.route("/search").get(searchUsers);
 
 module.exports = router;

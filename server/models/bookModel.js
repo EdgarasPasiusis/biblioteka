@@ -48,3 +48,11 @@ FROM books
   return bookList;
 };
 
+exports.getBookByID = async (id) => {
+  const book = await sql`
+    SELECT *
+    FROM books
+    WHERE books.id = ${id}
+    `;
+  return book;
+};
