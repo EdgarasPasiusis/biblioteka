@@ -15,8 +15,8 @@ function App() {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/users/login" element={<LoginForm />} />
-            <Route path="/users/signup" element={<SignupForm />} />
+            <Route path="/auth/login" element={<LoginForm />} />
+            <Route path="/auth/signup" element={<SignupForm />} />
             
             <Route element={<ProtectedRoute2 />}>
               <Route path="/orders" element={<Orders />} />

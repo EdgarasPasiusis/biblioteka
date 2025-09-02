@@ -26,7 +26,7 @@ const LoginForm = () => {
       });
       setuser(response.data.data);
       setError("");
-      navigate("/menu");
+      navigate("/");
     } catch (error) {
       setError(error.response?.data?.message || "Login failed");
       setuser(null);

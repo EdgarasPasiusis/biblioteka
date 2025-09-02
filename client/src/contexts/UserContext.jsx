@@ -11,11 +11,10 @@ export const UserContextProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`${API_URL}/me`, {
+        const response = await axios.get(`${API_URL}/auth/me`, {
           withCredentials: true,
+          method: "GET"
         });
-        
-        // console.log(response.data);
         setuser(response.data);
       } catch (error) {
         setuser(null);

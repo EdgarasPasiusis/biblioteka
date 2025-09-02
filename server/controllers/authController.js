@@ -1,4 +1,4 @@
-const { createUser, getUserByEmail } = require("../models/authModel");
+const { createUser, getUserByEmail, getUserById } = require("../models/authModel");
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
 const AppError = require("../utils/AppError");
@@ -68,6 +68,44 @@ exports.login = async (req, res, next) => {
       status: "success",
       data: user,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getAuthenticatedUser = async (req, res) => {
+  try {
+    req.user.password = undefined;
+    req.user.created_at = undefined;
+    res.status(200).json(req.user);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.protect = async (req, res, next) => {
+  try {
+    let token = req.cookies?.jwt;
+
+    if (!token) {
+      throw new AppError(
+        "You are not logged in! Please log in to get access.",
+        401
+      );
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(decoded);
+
+    const currentUser = await getUserById(decoded.id);
+    if (!currentUser) {
+      throw new AppError(
+        "The user belonging to this token does no longer exist.",
+        401
+      );
+    }
+    req.user = currentUser;
+    next();
   } catch (error) {
     next(error);
   }

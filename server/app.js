@@ -6,14 +6,24 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const reservationRoutes = require('./routes/reservationRoutes');
 const favoritiesController = require('./routes/favoritesRoutes');
 const commentsController = require('./routes/commentsRoutes');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const app = express();
 
 app.use(express.json());
 
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  })
+);
 
 app.get('/', (req, res) => {
   res.send('Server ok');
 });
+
+app.use(cookieParser());
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/books', bookRoutes);
