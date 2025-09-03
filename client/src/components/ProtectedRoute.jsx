@@ -5,7 +5,7 @@ import { Navigate } from "react-router";
 const ProtectedRoute = ({ children }) => {
   const { user } = useContext(UserContext);
 
-  return user ? children : <Navigate to="/users/login" replace />;
+  return user ? children : <Navigate to="/auth/login" replace />;
 };
 
 export default ProtectedRoute;

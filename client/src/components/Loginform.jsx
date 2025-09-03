@@ -138,7 +138,7 @@ const LoginForm = () => {
         <div className="text-center text-sm text-gray-600">
           Don't have an account?{" "}
           <a
-            href="/users/signup"
+            href="/auth/signup"
             className="font-medium text-primary hover:text-primary/80"
           >
             Sign up

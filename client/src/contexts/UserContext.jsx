@@ -13,7 +13,6 @@ export const UserContextProvider = ({ children }) => {
       try {
         const response = await axios.get(`${API_URL}/auth/me`, {
           withCredentials: true,
-          method: "GET"
         });
         setuser(response.data);
       } catch (error) {

@@ -9,7 +9,7 @@ const Nav = () => {
 
   return (
     <nav className="bg-neutral-900 text-white">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
+      <div className="mx-auto flex max-w-8xl items-center justify-between px-4 py-3">
         <div className="flex items-center gap-2">
           <NavLink to="/" className="flex items-center gap-2">
             <svg
@@ -44,10 +44,10 @@ const Nav = () => {
           {user ? (
             <>
               <NavLink
-                to="/orders"
+                to="/admin"
                 className="hover:text-gray-300 transition-colors"
               >
-                Orders
+                Admin
               </NavLink>
               <Heart className="h-5 w-5 cursor-pointer hover:text-gray-300" />
               <Bell className="h-5 w-5 cursor-pointer hover:text-gray-300" />
@@ -57,13 +57,13 @@ const Nav = () => {
           ) : (
             <>
               <NavLink
-                to="/users/login"
+                to="/auth/login"
                 className="hover:text-gray-300 transition-colors"
               >
                 Login
               </NavLink>
               <NavLink
-                to="/users/signup"
+                to="/auth/signup"
                 className="btn-primary"
               >
                 Sign Up
