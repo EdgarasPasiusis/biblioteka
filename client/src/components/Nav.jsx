@@ -27,26 +27,28 @@ const Nav = () => {
           </NavLink>
         </div>
 
-    <div className="w-full md:w-auto md:flex mx-0 md:mx-6 my-2 md:my-0">
-      <div className="relative w-full max-w-md md:w-120">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-        <input
-          type="text"
-          placeholder="Search for the book you want and read"
-          className="w-full rounded-md bg-[#373737] pl-9 pr-4 py-2 text-sm placeholder-gray-400 text-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
-        />
-      </div>
-    </div>
+        <div className="w-full md:w-auto md:flex mx-0 md:mx-6 my-2 md:my-0">
+          <div className="relative w-full max-w-md md:w-120">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search for the book you want and read"
+              className="w-full rounded-md bg-[#373737] pl-9 pr-4 py-2 text-sm placeholder-gray-400 text-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            />
+          </div>
+        </div>
 
         <div className="flex items-center gap-4">
           {user ? (
             <>
-              <NavLink
-                to="/admin"
-                className="hover:text-gray-300 transition-colors"
-              >
-                Admin
-              </NavLink>
+              {user.role === "admin" && (
+                <NavLink
+                  to="/admin"
+                  className="hover:text-gray-300 transition-colors"
+                >
+                  Admin Panel
+                </NavLink>
+              )}
               <Heart className="h-5 w-5 cursor-pointer hover:text-gray-300" />
               <Bell className="h-5 w-5 cursor-pointer hover:text-gray-300" />
               <ShoppingCart className="h-5 w-5 cursor-pointer hover:text-gray-300" />
@@ -60,7 +62,10 @@ const Nav = () => {
               >
                 Login
               </NavLink>
-              <NavLink to="/auth/signup" className="hover:text-gray-300 transition-colors">
+              <NavLink
+                to="/auth/signup"
+                className="hover:text-gray-300 transition-colors"
+              >
                 Sign Up
               </NavLink>
             </>
