@@ -24,7 +24,11 @@ const Logout = () => {
 
   return (
     <>
-      <button onClick={handleLogout}>
+      <button
+        onClick={handleLogout}
+        className="h-5 w-5 cursor-pointer"
+        style={{ cursor: "pointer" }}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
