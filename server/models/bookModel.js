@@ -4,11 +4,12 @@ exports.postBook = async (newBook) => {
   const book = await sql`
       INSERT INTO books ${sql(
         newBook,
-        "category_id",
+        "genre_id",
         "title",
         "author",
         "description",
-        "image"
+        "image",
+        "rating"
       )}
          RETURNING *;
       `;
@@ -44,6 +45,7 @@ exports.getAllBooks = async () => {
   const bookList = await sql`
 SELECT *
 FROM books
+JOIN genres ON books.genre_id = genres.id
     `;
   return bookList;
 };

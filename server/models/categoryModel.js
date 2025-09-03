@@ -2,7 +2,7 @@ const sql = require("../utils/postgres");
 
 exports.postCategory = async (newCategory) => {
   const category = await sql`
-      INSERT INTO categorys ${sql(
+      INSERT INTO genres ${sql(
         newCategory,
         "name"
       )}
@@ -13,8 +13,8 @@ exports.postCategory = async (newCategory) => {
 
 exports.deleteCategory = async (id) => {
   const category = await sql`
-   DELETE FROM categorys
-   WHERE categorys.id = ${id}
+   DELETE FROM genres
+   WHERE genres.id = ${id}
    returning *
     `;
   return category;
@@ -22,7 +22,7 @@ exports.deleteCategory = async (id) => {
 
 exports.updateCategory = async (id, updatedCategory) => {
   const category = await sql`
-    update categorys set ${sql(
+    update genres set ${sql(
       updatedCategory,
       "name"
     )}
@@ -35,7 +35,7 @@ exports.updateCategory = async (id, updatedCategory) => {
 exports.getAllCategorys = async () => {
   const categoryList = await sql`
 SELECT *
-FROM categorys
+FROM genres
     `;
   return categoryList;
 };
