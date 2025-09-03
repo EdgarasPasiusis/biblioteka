@@ -36,16 +36,16 @@ const SignupForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+    <div className="min-h-screen flex items-center justify-center bg-[#242121] py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-[#2a2727] p-8 rounded-xl shadow-lg">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-dark">
+          <h2 className="mt-6 text-center text-3xl font-medium text-gray-400">
             Create a new account
           </h2>
         </div>
 
         {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 p-4">
+          <div className="bg-red-50 border-l-4 border-red-700 p-4">
             <div className="flex">
               <div className="ml-3">
                 <p className="text-sm text-red-700">{error}</p>
@@ -59,7 +59,7 @@ const SignupForm = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-400"
               >
                 Email address
               </label>
@@ -73,7 +73,7 @@ const SignupForm = () => {
                   },
                 })}
                 type="email"
-                className="input-field mt-1"
+                className="input-field mt-1 placeholder:text-gray-600 rounded-md shadow-sm w-full text-white"
                 placeholder="Email address"
               />
               {errors.email && (
@@ -84,7 +84,7 @@ const SignupForm = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-400"
               >
                 Password
               </label>
@@ -98,7 +98,7 @@ const SignupForm = () => {
                   },
                 })}
                 type="password"
-                className="input-field mt-1"
+                className="input-field mt-1 placeholder:text-gray-600 rounded-md shadow-sm w-full text-white"
                 placeholder="Password"
               />
               {errors.password && (
@@ -112,7 +112,7 @@ const SignupForm = () => {
           <div>
             <button
               type="submit"
-              className="btn-primary w-full flex justify-center py-2 px-4"
+              className="btn-primary w-full flex justify-center py-2 px-4 text-gray-400"
               disabled={loading}
             >
               {loading ? (
@@ -150,7 +150,7 @@ const SignupForm = () => {
           Already have an account?{" "}
           <a
             href="/auth/login"
-            className="font-medium text-primary hover:text-primary/80"
+            className="font-medium text-primary hover:text-primary/80 text-gray-400"
           >
             Sign in
           </a>

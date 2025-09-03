@@ -1,4 +1,3 @@
-// BooksGrid.jsx
 import React from "react";
 
 const BooksGrid = ({ selectedGenre }) => {

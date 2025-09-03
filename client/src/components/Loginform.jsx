@@ -36,11 +36,11 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+    <div className="min-h-screen flex items-center justify-center bg-[#242121] py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-[#2a2727] p-8 rounded-xl shadow-lg">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-dark">
-            Sign in to your account
+          <h2 className="mt-6 text-center text-3xl font-medium text-gray-400">
+            Login to your account
           </h2>
         </div>
 
@@ -55,11 +55,11 @@ const LoginForm = () => {
         )}
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div className="rounded-md shadow-sm space-y-4">
+          <div className="space-y-4">
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-400"
               >
                 Email address
               </label>
@@ -68,17 +68,17 @@ const LoginForm = () => {
                 {...register("email", { required: "Email is required" })}
                 type="email"
                 autoComplete="email"
-                className="input-field mt-1"
+                className="input-field mt-1 placeholder:text-gray-600 rounded-md shadow-sm w-full text-white"
                 placeholder="Email address"
               />
               {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email.message}</p>
+                <p className="text-red-800 text-sm">{errors.email.message}</p>
               )}
             </div>
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-400"
               >
                 Password
               </label>
@@ -87,11 +87,11 @@ const LoginForm = () => {
                 {...register("password", { required: "Password is required" })}
                 type="password"
                 autoComplete="current-password"
-                className="input-field mt-1"
+                className="input-field mt-1 placeholder:text-gray-600 rounded-md shadow-sm w-full text-white"
                 placeholder="Password"
               />
               {errors.password && (
-                <p className="text-red-500 text-sm">
+                <p className="text-red-800 text-sm">
                   {errors.password.message}
                 </p>
               )}
@@ -101,7 +101,7 @@ const LoginForm = () => {
           <div>
             <button
               type="submit"
-              className="btn-primary w-full flex justify-center py-2 px-4"
+              className="btn-primary w-full flex justify-center py-2 px-4 text-gray-400"
               disabled={loading}
             >
               {loading ? (
@@ -139,7 +139,7 @@ const LoginForm = () => {
           Don't have an account?{" "}
           <a
             href="/auth/signup"
-            className="font-medium text-primary hover:text-primary/80"
+            className="font-medium text-primary hover:text-primary/80 text-gray-400"
           >
             Sign up
           </a>

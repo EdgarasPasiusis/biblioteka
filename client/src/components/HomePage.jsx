@@ -31,7 +31,6 @@ const MainPage = () => {
           </button>
         ))}
       </div>
-        {/* Knygų tinklelis */}
       <BooksGrid selectedGenre={selectedGenre} />
     </div>
   );
