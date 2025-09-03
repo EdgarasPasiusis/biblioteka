@@ -8,37 +8,35 @@ const Nav = () => {
   const { user } = useContext(UserContext);
 
   return (
-    <nav className="bg-neutral-900 text-white">
+    <nav className="bg-[#292828] text-white">
       <div className="mx-auto flex max-w-8xl items-center justify-between px-4 py-3">
         <div className="flex items-center gap-2">
           <NavLink to="/" className="flex items-center gap-2">
             <svg
-              className="h-6 w-6"
-              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
-              stroke="currentColor"
+              className="h-6 w-6 stroke-white"
+              fill="none"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6v12M6 6v12M18 6v12"
-              />
+              <path d="M1.5,3.41V16.77H9.14A2.86,2.86,0,0,1,12,19.64V6.27A2.86,2.86,0,0,0,9.14,3.41Z" />
+              <path d="M22.5,3.41V16.77H14.86A2.86,2.86,0,0,0,12,19.64V6.27a2.86,2.86,0,0,1,2.86-2.86Z" />
+              <polyline points="22.5 16.77 22.5 20.59 14.86 20.59 9.14 20.59 1.5 20.59 1.5 16.77" />
             </svg>
+
             <span className="font-medium text-lg">Library</span>
           </NavLink>
         </div>
 
-        <div className="mx-6 hidden md:flex">
-          <div className="relative w-120 max-w-md">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search for the book you want and read"
-              className="w-full rounded-md bg-neutral-800 pl-9 pr-4 py-2 text-sm placeholder-gray-400 text-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
-            />
-          </div>
-        </div>
+    <div className="w-full md:w-auto md:flex mx-0 md:mx-6 my-2 md:my-0">
+      <div className="relative w-full max-w-md md:w-120">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+        <input
+          type="text"
+          placeholder="Search for the book you want and read"
+          className="w-full rounded-md bg-[#373737] pl-9 pr-4 py-2 text-sm placeholder-gray-400 text-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+        />
+      </div>
+    </div>
 
         <div className="flex items-center gap-4">
           {user ? (
@@ -62,10 +60,7 @@ const Nav = () => {
               >
                 Login
               </NavLink>
-              <NavLink
-                to="/auth/signup"
-                className="btn-primary"
-              >
+              <NavLink to="/auth/signup" className="hover:text-gray-300 transition-colors">
                 Sign Up
               </NavLink>
             </>
