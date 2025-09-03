@@ -26,7 +26,7 @@ const Logout = () => {
     <>
       <button
         onClick={handleLogout}
-        className="h-5 w-5 cursor-pointer"
+        className="h-5 w-5 cursor-pointer hover:text-gray-300"
         style={{ cursor: "pointer" }}
       >
         <svg
@@ -36,10 +36,9 @@ const Logout = () => {
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="lucide lucide-log-out-icon lucide-log-out"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         >
           <path d="m16 17 5-5-5-5" />
           <path d="M21 12H9" />
