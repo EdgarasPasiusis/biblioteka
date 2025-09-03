@@ -49,9 +49,12 @@ const Nav = () => {
                   Admin Panel
                 </NavLink>
               )}
-              <Heart className="h-5 w-5 cursor-pointer hover:text-gray-300" />
-              <Bell className="h-5 w-5 cursor-pointer hover:text-gray-300" />
-              <ShoppingCart className="h-5 w-5 cursor-pointer hover:text-gray-300" />
+              <NavLink
+                to="/reservations"
+                className="h-5 w-5 cursor-pointer hover:text-gray-300"
+              >
+                <Heart className="h-5 w-5 cursor-pointer hover:text-gray-300" />
+              </NavLink>
               <Logout />
             </>
           ) : (
