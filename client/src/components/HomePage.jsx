@@ -1,17 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BooksGrid from "./BooksGird";
+import axios from "axios";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const MainPage = () => {
   const [selectedGenre, setSelectedGenre] = useState("All Books");
+  const [genres, setGenres] = useState(["All Books"]);
 
-  const genres = [
-    "All Books",
-    "Detective",
-    "Love",
-    "History",
-    "Science fiction",
-    "Fantastic",
-  ];
+useEffect(() => {
+  const fetchGenres = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/genres`);
+      const dbGenres = res.data.tours || [];
+      setGenres(["All Books", ...dbGenres.map((g) => g.genre)]);
+    } catch (err) {
+      console.error("Failed to load genres", err);
+    }
+  };
+
+  fetchGenres();
+}, []);
 
   return (
     <div className="min-h-screen bg-[#242121] text-white p-6">

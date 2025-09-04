@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import Logout from "./Logout";
 import { useContext } from "react";
 import { UserContext } from "../contexts/UserContext";
-import { Search, Heart, Bell, ShoppingCart } from "lucide-react";
+import { Search, Heart} from "lucide-react";
 
 const Nav = () => {
   const { user } = useContext(UserContext);
