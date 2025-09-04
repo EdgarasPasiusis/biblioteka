@@ -100,13 +100,14 @@ exports.searchAndFilterBooks = async (params) => {
   }
 
   const result = await sql`
-    SELECT 
-      books.* 
-    FROM books
-    JOIN genres ON books.genre_id = genres.id
-    ${whereSQL}
-    ORDER BY ${safeSort} ${safeOrder}
-    LIMIT ${limit} OFFSET ${offset}
+SELECT 
+  books.*,
+  genres.genre AS genre
+FROM books
+JOIN genres ON books.genre_id = genres.id
+${whereSQL}
+ORDER BY ${safeSort} ${safeOrder}
+LIMIT ${limit} OFFSET ${offset}
   `;
 
   return result || [];

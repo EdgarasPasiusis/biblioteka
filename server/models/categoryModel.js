@@ -4,7 +4,7 @@ exports.postCategory = async (newCategory) => {
   const category = await sql`
       INSERT INTO genres ${sql(
         newCategory,
-        "name"
+        "genre"
       )}
          RETURNING *;
       `;
@@ -24,7 +24,7 @@ exports.updateCategory = async (id, updatedCategory) => {
   const category = await sql`
     update genres set ${sql(
       updatedCategory,
-      "name"
+      "genre"
     )}
     where id = ${id}
     returning *;

@@ -28,7 +28,7 @@ app.use(cookieParser());
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/books', bookRoutes);
 app.use('/api/v1/users', userRoutes);
-app.use('/api/v1/categorys', categoryRoutes);
+app.use('/api/v1/genres', categoryRoutes);
 app.use('/api/v1/reservations', reservationRoutes);
 app.use('/api/v1/favorites', favoritiesController);
 app.use('/api/v1/comments', commentsController);
