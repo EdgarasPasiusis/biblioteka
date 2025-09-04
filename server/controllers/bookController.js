@@ -4,6 +4,7 @@ const {
   updateBook,
   getAllBooks,
   getBookByID,
+  searchAndFilterBooks
 } = require("../models/bookModel");
 const { validationResult } = require("express-validator");
 const AppError = require("../utils/AppError");
@@ -97,6 +98,31 @@ exports.getBookByID = async (req, res, next) => {
       data: book,
     });
   } catch (error) {
+    next(error);
+  }
+};
+
+exports.searchBook = async (req, res, next) => {
+  try {
+    const { title, author, genre_id, sortBy, order, page, limit } = req.query;
+
+    const books = await searchAndFilterBooks({
+      title,
+      author,
+      genre_id: genre_id ? parseInt(genre_id, 10) : undefined,
+      sortBy,
+      order,
+      page: parseInt(page, 10) || 1,
+      limit: parseInt(limit, 10) || 10,
+    });
+
+    res.status(200).json({
+      status: "success",
+      results: Array.isArray(books) ? books.length : 0,
+      data: Array.isArray(books) ? books : [],
+    });
+  } catch (error) {
+    console.error("Error in searchBooks:", error.message);
     next(error);
   }
 };
