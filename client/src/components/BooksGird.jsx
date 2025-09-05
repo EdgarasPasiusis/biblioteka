@@ -15,8 +15,8 @@ const BooksGrid = ({ selectedGenre }) => {
 
         setBooks(res.data.tours || []);
       } catch (err) {
-        console.error("Nepavyko gauti knygų:", err);
-        setError("Nepavyko užkrauti knygų 😢");
+        console.error("Failed to get books:", err);
+        setError("Failed to load books");
       } finally {
         setLoading(false);
       }
@@ -33,7 +33,7 @@ const BooksGrid = ({ selectedGenre }) => {
         );
 
   if (loading) {
-    return <p className="text-center text-gray-400">Kraunama...</p>;
+    return <p className="text-center text-gray-400">Loading...</p>;
   }
 
   if (error) {
@@ -43,7 +43,7 @@ const BooksGrid = ({ selectedGenre }) => {
   return (
     <div className="px-6 pb-10">
       {filteredBooks.length === 0 ? (
-        <p className="text-center text-gray-400">Nerasta knygų</p>
+        <p className="text-center text-gray-400">No books found</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {filteredBooks.map((book, idx) => (

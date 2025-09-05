@@ -1,11 +1,62 @@
 import { NavLink } from "react-router-dom";
 import Logout from "./Logout";
-import { useContext } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import { UserContext } from "../contexts/UserContext";
-import { Search, Heart} from "lucide-react";
+import { Search, Heart } from "lucide-react";
+import axios from "axios";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Nav = () => {
   const { user } = useContext(UserContext);
+  const [query, setQuery] = useState("");
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (query.trim().length >= 2) {
+        setShowDropdown(true);
+        fetchBooks(query);
+      } else {
+        setBooks([]);
+        setShowDropdown(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounce);
+  }, [query]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const fetchBooks = async (searchTerm) => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`${API_URL}/books/search`, {
+        params: {
+          title: searchTerm,
+          author: searchTerm,
+          limit: 10,
+          page: 1,
+        },
+      });
+      setBooks(res.data.data || []);
+    } catch (err) {
+      console.error("Search failed:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <nav className="bg-[#292828] text-white">
@@ -22,19 +73,43 @@ const Nav = () => {
               <path d="M22.5,3.41V16.77H14.86A2.86,2.86,0,0,0,12,19.64V6.27a2.86,2.86,0,0,1,2.86-2.86Z" />
               <polyline points="22.5 16.77 22.5 20.59 14.86 20.59 9.14 20.59 1.5 20.59 1.5 16.77" />
             </svg>
-
             <span className="font-medium text-lg">Library</span>
           </NavLink>
         </div>
 
-        <div className="w-full md:w-auto md:flex mx-0 md:mx-6 my-2 md:my-0">
-          <div className="relative w-full max-w-md md:w-120">
+        <div className="relative w-full md:w-auto md:flex mx-0 md:mx-6 my-2 md:my-0">
+          <div className="relative w-full max-w-md md:w-120" ref={dropdownRef}>
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="Search for the book you want and read"
+              placeholder="Search by title or author"
               className="w-full rounded-md bg-[#373737] pl-9 pr-4 py-2 text-sm placeholder-gray-400 text-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              value={query}
+              onFocus={() => query.trim().length >= 2 && setShowDropdown(true)}
+              onChange={(e) => setQuery(e.target.value)}
             />
+
+            {showDropdown && query.trim().length >= 2 && (
+              <div className="absolute top-full left-0 w-full bg-[#2c2c2c] mt-2 rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
+                {loading ? (
+                  <div className="p-2 text-gray-400">Loading...</div>
+                ) : books.length > 0 ? (
+                  books.map((book) => (
+                    <NavLink
+                      key={book.id}
+                      to={`/books/${book.id}`}
+                      onClick={() => setShowDropdown(false)}
+                      className="block px-4 py-2 text-gray-200 hover:bg-gray-700"
+                    >
+                      {book.title} –{" "}
+                      <span className="text-gray-400">{book.author}</span>
+                    </NavLink>
+                  ))
+                ) : (
+                  <div className="p-2 text-gray-400">No results found</div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
