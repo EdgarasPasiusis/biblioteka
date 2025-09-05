@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -7,6 +8,8 @@ const BooksGrid = ({ selectedGenre }) => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -49,7 +52,8 @@ const BooksGrid = ({ selectedGenre }) => {
           {filteredBooks.map((book, idx) => (
             <div
               key={`${book.id}-${idx}`}
-              className="bg-[#2a2727] rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105"
+              className="bg-[#2a2727] rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105 cursor-pointer"
+              onClick={() => navigate(`/books/${book.id}`)}
             >
               <div className="relative">
                 <img

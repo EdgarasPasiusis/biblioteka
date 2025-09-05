@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import Logout from "./Logout";
 import { useContext, useState, useEffect, useRef } from "react";
 import { UserContext } from "../contexts/UserContext";
-import { Search, Heart } from "lucide-react";
+import { Search, Heart, ShoppingBasket, ShoppingBagIcon, ShoppingCartIcon, ShoppingCart } from "lucide-react";
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -139,10 +139,16 @@ const Nav = () => {
                 </NavLink>
               )}
               <NavLink
-                to="/reservations"
+                to="/favorites"
                 className="h-5 w-5 cursor-pointer hover:text-gray-300"
               >
                 <Heart className="h-5 w-5 cursor-pointer hover:text-gray-300" />
+              </NavLink>
+                            <NavLink
+                to="/reservations"
+                className="h-5 w-5 cursor-pointer hover:text-gray-300"
+              >
+                <ShoppingCart className="h-5 w-5 cursor-pointer hover:text-gray-300" />
               </NavLink>
               <Logout />
             </>

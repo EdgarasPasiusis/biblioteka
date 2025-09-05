@@ -5,7 +5,6 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export const UserContext = createContext();
 
-
 export const UserContextProvider = ({ children }) => {
   const [user, setuser] = useState(null);
   useEffect(() => {
@@ -23,5 +22,9 @@ export const UserContextProvider = ({ children }) => {
     fetchUser();
   }, []);
 
-  return <UserContext value={{ user, setuser }}>{children}</UserContext>;
+  return (
+    <UserContext.Provider value={{ user, setuser }}>
+      {children}
+    </UserContext.Provider>
+  );
 };
