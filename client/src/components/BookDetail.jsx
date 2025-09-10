@@ -10,9 +10,9 @@ const BookDetail = () => {
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isFavorite, setIsFavorite] = useState(false);
   const { id } = useParams();
-  const { user } = useContext(UserContext);
-
+  const { user, token } = useContext(UserContext);
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -29,6 +29,65 @@ const BookDetail = () => {
 
     fetchBook();
   }, [id]);
+
+  useEffect(() => {
+    const checkFavorite = async () => {
+      if (!user) return;
+      try {
+        const res = await axios.get(`${API_URL}/favorites`, {
+          withCredentials: true,
+        });
+        const userFavorites = res.data;
+        const found = userFavorites.some((fav) => fav.book_id === parseInt(id));
+        setIsFavorite(found);
+      } catch (err) {
+        console.error("Failed to check favorites:", err);
+      }
+    };
+
+    checkFavorite();
+  }, [id, user, token]);
+
+  useEffect(() => {
+    const checkFavorite = async () => {
+      if (!user) return;
+      try {
+        const res = await axios.get(`${API_URL}/favorites/check/${id}`, {
+          withCredentials: true,
+        });
+        setIsFavorite(res.data.isFavorite);
+      } catch (err) {
+        console.error("Failed to check favorites:", err);
+        setIsFavorite(false);
+      }
+    };
+
+    checkFavorite();
+  }, [id, user]);
+
+  const handleAddFavorite = async () => {
+    try {
+      await axios.post(
+        `${API_URL}/favorites`,
+        { bookId: id },
+        { withCredentials: true }
+      );
+      setIsFavorite(true);
+    } catch (err) {
+      console.error("Failed to add favorite:", err);
+    }
+  };
+
+  const handleRemoveFavorite = async () => {
+    try {
+      await axios.delete(`${API_URL}/favorites/${id}`, {
+        withCredentials: true,
+      });
+      setIsFavorite(false);
+    } catch (err) {
+      console.error("Failed to remove favorite:", err);
+    }
+  };
 
   if (loading) {
     return (
@@ -87,9 +146,20 @@ const BookDetail = () => {
                   Reserve
                 </button>
               )}
-              {user && (
-                <button className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto transition-colors duration-300 cursor-pointer">
+              {user && !isFavorite && (
+                <button
+                  onClick={handleAddFavorite}
+                  className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto transition-colors duration-300 cursor-pointer"
+                >
                   Add to favorites
+                </button>
+              )}
+              {user && isFavorite && (
+                <button
+                  onClick={handleRemoveFavorite}
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto transition-colors duration-300 cursor-pointer"
+                >
+                  Remove from favorites
                 </button>
               )}
             </div>
