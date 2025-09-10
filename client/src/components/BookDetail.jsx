@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../contexts/UserContext";
+import ReviewsSection from "./ReviewsSection";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -11,6 +12,7 @@ const BookDetail = () => {
   const [error, setError] = useState(null);
   const { id } = useParams();
   const { user } = useContext(UserContext);
+
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -79,10 +81,15 @@ const BookDetail = () => {
               {book.description}
             </p>
 
-            <div className="mt-6">
+            <div className="mt-6 space-x-2">
               {user && (
-                <button className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto transition-colors duration-300">
+                <button className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto transition-colors duration-300 cursor-pointer">
                   Reserve
+                </button>
+              )}
+              {user && (
+                <button className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto transition-colors duration-300 cursor-pointer">
+                  Add to favorites
                 </button>
               )}
             </div>
