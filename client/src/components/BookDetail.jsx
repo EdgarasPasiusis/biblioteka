@@ -12,7 +12,7 @@ const BookDetail = () => {
   const [error, setError] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const { id } = useParams();
-  const { user, token } = useContext(UserContext);
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -32,25 +32,8 @@ const BookDetail = () => {
 
   useEffect(() => {
     const checkFavorite = async () => {
-      if (!user) return;
-      try {
-        const res = await axios.get(`${API_URL}/favorites`, {
-          withCredentials: true,
-        });
-        const userFavorites = res.data;
-        const found = userFavorites.some((fav) => fav.book_id === parseInt(id));
-        setIsFavorite(found);
-      } catch (err) {
-        console.error("Failed to check favorites:", err);
-      }
-    };
+      if (!user || !id) return;
 
-    checkFavorite();
-  }, [id, user, token]);
-
-  useEffect(() => {
-    const checkFavorite = async () => {
-      if (!user) return;
       try {
         const res = await axios.get(`${API_URL}/favorites/check/${id}`, {
           withCredentials: true,
