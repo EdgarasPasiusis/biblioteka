@@ -43,7 +43,13 @@ exports.updateBook = async (id, updatedBook) => {
 
 exports.getAllBooks = async () => {
   const bookList = await sql`
-SELECT *
+SELECT
+books.id,
+books.title,
+books.author,
+books.image,
+books.rating,
+genres.genre
 FROM books
 JOIN genres ON books.genre_id = genres.id
     `;
@@ -52,11 +58,14 @@ JOIN genres ON books.genre_id = genres.id
 
 exports.getBookByID = async (id) => {
   const book = await sql`
-    SELECT *
-    FROM books
-    WHERE books.id = ${id}
-    `;
-  return book;
+    SELECT 
+      b.*,
+      g.genre
+    FROM books AS b
+    JOIN genres AS g ON b.genre_id = g.id
+    WHERE b.id = ${id}
+  `;
+  return book[0];
 };
 
 exports.searchAndFilterBooks = async (params) => {
@@ -80,14 +89,21 @@ exports.searchAndFilterBooks = async (params) => {
   const safeSort = sortColumns[sortBy] || sql`books.title`;
   const safeOrder = order.toLowerCase() === "desc" ? sql`DESC` : sql`ASC`;
   const filters = [];
-  if (title) {
-    filters.push(sql`books.title ILIKE ${"%" + title + "%"}`);
+
+  if (title || author) {
+    if (title && author) {
+      filters.push(
+        sql`(books.title ILIKE ${"%" + title + "%"} OR books.author ILIKE ${"%" + author + "%"})`
+      );
+    } else if (title) {
+      filters.push(sql`books.title ILIKE ${"%" + title + "%"}`);
+    } else if (author) {
+      filters.push(sql`books.author ILIKE ${"%" + author + "%"}`);
+    }
   }
+
   if (genre_id) {
     filters.push(sql`books.genre_id = ${genre_id}`);
-  }
-  if (author) {
-    filters.push(sql`books.author ILIKE ${"%" + author + "%"}`);
   }
 
   let whereSQL = sql``;

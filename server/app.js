@@ -5,12 +5,13 @@ const userRoutes = require('./routes/userRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const reservationRoutes = require('./routes/reservationRoutes');
 const favoritiesController = require('./routes/favoritesRoutes');
-const commentsController = require('./routes/commentsRoutes');
+const reviewController = require('./routes/reviewRoutes');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const app = express();
 
+const app = express();
 app.use(express.json());
+app.use(cookieParser());
 
 app.use(
   cors({
@@ -23,7 +24,6 @@ app.get('/', (req, res) => {
   res.send('Server ok');
 });
 
-app.use(cookieParser());
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/books', bookRoutes);
@@ -31,6 +31,6 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/genres', categoryRoutes);
 app.use('/api/v1/reservations', reservationRoutes);
 app.use('/api/v1/favorites', favoritiesController);
-app.use('/api/v1/comments', commentsController);
+app.use('/api/v1/reviews', reviewController);
 
 module.exports = app;

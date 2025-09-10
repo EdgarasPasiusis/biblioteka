@@ -1,43 +1,45 @@
 const {
-  postFavorites,
-  deleteFavorite,
+  addFavorite,
+  removeFavorite,
   getAllFavorites,
+  getFavoritesByUser,
+  checkIfFavorite,
 } = require("../models/favoritesModel");
 const { validationResult } = require("express-validator");
-const AppError = require("../utils/AppError");
 
-exports.postFavorites = async (req, res, next) => {
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+exports.createFavorite = async (req, res) => {
   try {
-    const newFavorite = req.body;
+    const userId = req.user.id;
+    const { bookId } = req.body;
 
-    const postedFavorite = await postFavorites(newFavorite);
+    if (!bookId) {
+      return res.status(400).json({ message: "Book_id is required" });
+    }
 
-    res.status(201).json({
-      status: "success",
-      data: postedFavorite,
-    });
-  } catch (error) {
-    next(error);
+    const alreadyExists = await checkIfFavorite(userId, bookId);
+
+    if (alreadyExists) {
+      return res.status(409).json({ message: "Book is already in favorites" });
+    }
+
+    const favorite = await addFavorite(userId, bookId);
+    res.status(201).json(favorite);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
 exports.deleteFavorite = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const userId = req.user.id;
+    const bookId = req.params.id;
 
-    const favorite = await deleteFavorite(id);
+    await removeFavorite(userId, bookId);
 
-    if (!favorite) {
-      throw new AppError("favorite not found", 404);
-    }
-    res.status(200).json({
+    res.status(204).json({
       status: "success",
-      data: favorite,
+      data: null,
     });
   } catch (error) {
     next(error);
@@ -53,5 +55,32 @@ exports.getAllFavorites = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+exports.getUserFavorites = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const favorites = await getFavoritesByUser(userId);
+    res.json(favorites);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.checkFavoriteStatus = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { bookId } = req.params;
+
+    const isFav = await checkIfFavorite(userId, bookId);
+
+    res.status(200).json({ isFavorite: isFav });
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ message: "Server error while checking favorite status" });
   }
 };
