@@ -43,29 +43,40 @@ exports.updateBook = async (id, updatedBook) => {
 
 exports.getAllBooks = async () => {
   const bookList = await sql`
-SELECT
-books.id,
-books.title,
-books.author,
-books.image,
-books.rating,
-genres.genre
-FROM books
-JOIN genres ON books.genre_id = genres.id
-    `;
+    SELECT
+      books.id,
+      books.title,
+      books.author,
+      books.image,
+      COALESCE(AVG(r.rating)::numeric(10,1), 0) AS rating,
+      genres.genre
+    FROM books
+    JOIN genres ON books.genre_id = genres.id
+    LEFT JOIN reviews r ON r.book_id = books.id
+    GROUP BY books.id, books.title, books.author, books.image, genres.genre
+    ORDER BY books.title
+  `;
   return bookList;
 };
 
+
 exports.getBookByID = async (id) => {
-  const book = await sql`
+  const [book] = await sql`
     SELECT 
-      b.*,
-      g.genre
+      b.id,
+      b.title,
+      b.author,
+      b.image,
+      b.description,
+      g.genre,
+      COALESCE(AVG(r.rating)::numeric(10,1), 0) AS rating
     FROM books AS b
     JOIN genres AS g ON b.genre_id = g.id
+    LEFT JOIN reviews r ON r.book_id = b.id
     WHERE b.id = ${id}
+    GROUP BY b.id, b.title, b.author, b.image, b.description, g.genre
   `;
-  return book[0];
+  return book;
 };
 
 exports.searchAndFilterBooks = async (params) => {

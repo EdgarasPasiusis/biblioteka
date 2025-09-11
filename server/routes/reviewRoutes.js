@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 
-const { deleteComment, postReview } = require("../controllers/reviewController");
+const { protect } = require("../controllers/authController");
+const { deleteComment, postReview, getReviews } = require("../controllers/reviewController");
 
-router.route("/:id").delete(deleteComment);
-router.route("/").post(postReview);
+router.route("/book/:id").get(getReviews).post(protect, postReview);
+router.route("/:id").delete(protect, deleteComment);
 
 module.exports = router;

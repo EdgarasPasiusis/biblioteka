@@ -21,7 +21,7 @@ exports.addReview = async (reviewData) => {
 
 exports.getReviewsByBookId = async (book_id) => {
   const reviews = await sql`
-    SELECT r.*, u.username -- Pridedame ir vartotojo vardą
+    SELECT r.*, u.email
     FROM reviews r
     JOIN users u ON r.user_id = u.id
     WHERE r.book_id = ${book_id}
