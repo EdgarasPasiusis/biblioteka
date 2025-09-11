@@ -149,6 +149,16 @@ const BookDetail = () => {
           </div>
         </div>
       </div>
+      <div className="bg-[#1a1a1a] min-h-screen text-white p-4 sm:p-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8"></div>
+
+        <div className="bg-[#2a2727] rounded-lg shadow-lg overflow-hidden md:flex">
+        </div>
+        <ReviewsSection bookId={id} />
+
+      </div>
+    </div>
     </div>
   );
 };
