@@ -1,23 +1,45 @@
-const { postReservation, getAllReservations } = require("../models/reservationModel");
+const {
+  postReservation,
+  getAllReservations,
+  extendReservation,
+  getReservationByUserAndBook,
+  getReservationsByUser
+} = require("../models/reservationModel");
 const { validationResult } = require("express-validator");
 
-exports.postReservation = async (req, res, next) => {
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+exports.createReservation = async (req, res) => {
   try {
-    const newReservation = req.body;
+    const userId = req.user.id;
+    const { bookId, startDate, endDate } = req.body;
 
-    const postedReservation = await postReservation(newReservation);
-
-    res.status(201).json({
-      status: "success",
-      data: postedReservation,
+    const reservation = await postReservation({
+      user_id: userId,
+      book_id: bookId,
+      start_date: startDate,
+      end_date: endDate,
+      extend_count: 0,
+      status: "active",
     });
-  } catch (error) {
-    next(error);
+
+    res.status(201).json({ status: "success", data: reservation });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+exports.extendReservation = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { bookId, newEndDate } = req.body;
+
+    const updated = await extendReservation(userId, bookId, newEndDate);
+
+    res.status(200).json({ status: "success", data: updated });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: err.message });
   }
 };
 
@@ -30,5 +52,37 @@ exports.getAllReservations = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+exports.getReservationByUserAndBook = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { bookId } = req.params;
+
+    const reservation = await getReservationByUserAndBook(userId, bookId);
+
+    res.status(200).json({
+      status: "success",
+      data: reservation,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.getMyReservations = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const reservations = await getReservationsByUser(userId);
+
+    res.status(200).json({
+      status: "success",
+      data: reservations,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
   }
 };
