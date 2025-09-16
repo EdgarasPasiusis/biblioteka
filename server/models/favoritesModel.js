@@ -35,10 +35,20 @@ FROM favorites
 
 exports.getFavoritesByUser = async (userId) => {
   const favoritesList = await sql`
-    SELECT f.id, f.book_id, b.title, b.author
+    SELECT 
+      f.book_id,
+      b.title,
+      b.author,
+      b.image,
+      g.genre,
+      COALESCE(AVG(r.rating)::numeric(10,1), 0) AS rating
     FROM favorites f
     JOIN books b ON f.book_id = b.id
+    JOIN genres g ON b.genre_id = g.id
+    LEFT JOIN reviews r ON r.book_id = b.id
     WHERE f.user_id = ${userId}
+    GROUP BY f.book_id, b.title, b.author, b.image, g.genre
+    ORDER BY b.title
   `;
   return favoritesList;
 };

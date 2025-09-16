@@ -62,12 +62,18 @@ exports.getUserFavorites = async (req, res) => {
   try {
     const userId = req.user.id;
     const favorites = await getFavoritesByUser(userId);
-    res.json(favorites);
+
+    res.status(200).json({
+      status: "success",
+      results: favorites.length,
+      data: favorites,
+    });
   } catch (err) {
-    console.error(err);
+    console.error("Error in getUserFavorites:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 exports.checkFavoriteStatus = async (req, res) => {
   try {
