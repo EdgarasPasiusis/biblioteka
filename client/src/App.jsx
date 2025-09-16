@@ -8,6 +8,7 @@ import AdminPanelPage from "./components/AdminPanelPage";
 import ReservationPanelPage from "./components/ReservationPanelPage";
 import FavoritesPage from "./components/FavoritesPage";
 import { UserContextProvider } from "./contexts/UserContext";
+import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
   return (

@@ -106,7 +106,7 @@ const FavoritesPage = () => {
                 <div className="mt-auto pt-4">
                   <button
                     onClick={() => handleRemoveFavorite(fav.book_id)}
-                    className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded block w-full text-center transition-colors duration-300"
+                    className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded block w-full text-center transition-colors duration-300 cursor-pointer"
                   >
                     Remove from Favorites
                   </button>

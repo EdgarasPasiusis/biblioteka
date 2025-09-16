@@ -3,6 +3,9 @@ import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../contexts/UserContext";
 import ReviewsSection from "./ReviewsSection";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "./datepicker.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -13,6 +16,10 @@ const BookDetail = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   const { id } = useParams();
   const { user } = useContext(UserContext);
+
+  const [reservation, setReservation] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [endDate, setEndDate] = useState(new Date());
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -31,9 +38,21 @@ const BookDetail = () => {
   }, [id]);
 
   useEffect(() => {
+    const checkReservation = async () => {
+      if (!user || !id) return;
+      try {
+        const res = await axios.get(`${API_URL}/reservations/book/${id}`, {
+          withCredentials: true,
+        });
+        setReservation(res.data.data);
+      } catch (err) {
+        console.error("Failed to check reservation:", err);
+        setReservation(null);
+      }
+    };
+
     const checkFavorite = async () => {
       if (!user || !id) return;
-
       try {
         const res = await axios.get(`${API_URL}/favorites/check/${id}`, {
           withCredentials: true,
@@ -41,12 +60,53 @@ const BookDetail = () => {
         setIsFavorite(res.data.isFavorite);
       } catch (err) {
         console.error("Failed to check favorites:", err);
-        setIsFavorite(false);
       }
     };
 
+    checkReservation();
     checkFavorite();
   }, [id, user]);
+
+  const handleReserve = async () => {
+    try {
+      const res = await axios.post(
+        `${API_URL}/reservations`,
+        {
+          bookId: id,
+          startDate: new Date().toISOString(),
+          endDate: endDate.toISOString(),
+        },
+        { withCredentials: true }
+      );
+      setReservation(res.data.data);
+      setShowDatePicker(false);
+    } catch (err) {
+      console.error("Failed to reserve book:", err);
+      alert(err.response?.data?.message || "Reservation failed!");
+    }
+  };
+  const handleExtend = async () => {
+    if (!reservation) return;
+
+    const currentEndDate = new Date(reservation.end_date);
+    const newEndDate = new Date(
+      currentEndDate.setDate(currentEndDate.getDate() + 14)
+    );
+
+    try {
+      const res = await axios.put(
+        `${API_URL}/reservations`,
+        {
+          bookId: id,
+          newEndDate: newEndDate.toISOString(),
+        },
+        { withCredentials: true }
+      );
+      setReservation(res.data.data);
+    } catch (err) {
+      console.error("Failed to extend reservation:", err);
+    }
+  };
 
   const handleAddFavorite = async () => {
     try {
@@ -123,42 +183,93 @@ const BookDetail = () => {
               {book.description}
             </p>
 
-            <div className="mt-6 space-x-2">
+            <div className="mt-6 flex flex-wrap items-end gap-2">
               {user && (
-                <button className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto transition-colors duration-300 cursor-pointer">
-                  Reserve
-                </button>
-              )}
-              {user && !isFavorite && (
-                <button
-                  onClick={handleAddFavorite}
-                  className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto transition-colors duration-300 cursor-pointer"
-                >
-                  Add to favorites
-                </button>
-              )}
-              {user && isFavorite && (
-                <button
-                  onClick={handleRemoveFavorite}
-                  className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto transition-colors duration-300 cursor-pointer"
-                >
-                  Remove from favorites
-                </button>
+                <>
+                  {!reservation && !showDatePicker && (
+                    <button
+                      onClick={() => setShowDatePicker(true)}
+                      className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto cursor-pointer"
+                    >
+                      Reserve
+                    </button>
+                  )}
+
+                  {showDatePicker && (
+                    <div className="bg-gray-800 p-4 rounded-lg w-full">
+                      <h3 className="text-lg mb-2">Select return date:</h3>
+                      <DatePicker
+                        selected={endDate}
+                        onChange={(date) => setEndDate(date)}
+                        minDate={new Date()}
+                        inline
+                      />
+                      <div className="mt-4 flex gap-2">
+                        <button
+                          onClick={handleReserve}
+                          className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
+                        >
+                          Confirm Reservation
+                        </button>
+                        <button
+                          onClick={() => setShowDatePicker(false)}
+                          className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {reservation && (
+                    <div className="flex flex-col gap-2">
+                      <p className="text-gray-400 text-sm">
+                        Reserved until:{" "}
+                        {new Date(reservation.end_date).toLocaleDateString()}
+                      </p>
+                      <p className="text-gray-400 text-sm">
+                        Extensions used: {reservation.extend_count} / 2
+                      </p>
+                      <button
+                        onClick={handleExtend}
+                        disabled={reservation.extend_count >= 2}
+                        className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto cursor-pointer disabled:bg-gray-500 disabled:cursor-not-allowed"
+                      >
+                        {reservation.extend_count >= 2
+                          ? "Maximum extensions reached"
+                          : "Extend Reservation"}
+                      </button>
+                    </div>
+                  )}
+
+                  {!showDatePicker && (
+                    <>
+                      {!isFavorite ? (
+                        <button
+                          onClick={handleAddFavorite}
+                          className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto transition-colors duration-300 cursor-pointer"
+                        >
+                          Add to favorites
+                        </button>
+                      ) : (
+                        <button
+                          onClick={handleRemoveFavorite}
+                          className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto transition-colors duration-300 cursor-pointer"
+                        >
+                          Remove from favorites
+                        </button>
+                      )}
+                    </>
+                  )}
+                </>
               )}
             </div>
           </div>
         </div>
-      </div>
-      <div className="bg-[#1a1a1a] min-h-screen text-white p-4 sm:p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8"></div>
-
-        <div className="bg-[#2a2727] rounded-lg shadow-lg overflow-hidden md:flex">
+        <div className="mt-8">
+          <ReviewsSection bookId={id} />
         </div>
-        <ReviewsSection bookId={id} />
-
       </div>
-    </div>
     </div>
   );
 };
