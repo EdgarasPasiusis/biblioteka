@@ -74,7 +74,11 @@ exports.getBookByID = async (id) => {
       b.image,
       b.description,
       g.genre,
-      COALESCE(AVG(r.rating)::numeric(10,1), 0) AS rating
+      COALESCE(AVG(r.rating)::numeric(10,1), 0) AS rating,
+      NOT EXISTS (
+        SELECT 1 FROM reservations res
+        WHERE res.book_id = b.id AND res.status = 'active'
+      ) AS is_available
     FROM books AS b
     JOIN genres AS g ON b.genre_id = g.id
     LEFT JOIN reviews r ON r.book_id = b.id

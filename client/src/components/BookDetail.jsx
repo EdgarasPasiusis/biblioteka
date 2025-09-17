@@ -187,12 +187,23 @@ const BookDetail = () => {
               {user && (
                 <>
                   {!reservation && !showDatePicker && (
-                    <button
-                      onClick={() => setShowDatePicker(true)}
-                      className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto cursor-pointer"
-                    >
-                      Reserve
-                    </button>
+                    <>
+                      {book.is_available ? (
+                        <button
+                          onClick={() => setShowDatePicker(true)}
+                          className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded w-full sm:w-auto cursor-pointer"
+                        >
+                          Reserve
+                        </button>
+                      ) : (
+                        <button
+                          disabled
+                          className="bg-red-600 text-white font-bold py-2 px-4 rounded w-full sm:w-auto cursor-not-allowed"
+                        >
+                          Already Taken
+                        </button>
+                      )}
+                    </>
                   )}
 
                   {showDatePicker && (
