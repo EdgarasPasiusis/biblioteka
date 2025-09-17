@@ -11,6 +11,7 @@ import { UserContextProvider } from "./contexts/UserContext";
 import CategoryManagmentPage from "./components/CategoryManagmentPage";
 import UserManagmentPage from "./components/UserManagmentPage";
 import BookManagmentPage from "./components/BookManagmentPage";
+import ReservationManagmentPage from "./components/ReservationManagmentPage";
 import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
             <Route path="/admin/genres" element={<CategoryManagmentPage />} />
             <Route path="/admin/users" element={<UserManagmentPage />} />
             <Route path="/admin/books" element={<BookManagmentPage />} />
+            <Route path="/admin/reservations" element={<ReservationManagmentPage />} />
           </Routes>
         </main>
       </div>

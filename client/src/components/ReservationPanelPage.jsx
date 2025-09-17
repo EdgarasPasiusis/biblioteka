@@ -38,7 +38,7 @@ const ReservationsPage = () => {
 
     try {
       const res = await axios.put(
-        `${API_URL}/reservations`,
+        `${API_URL}/reservations/extend`,
         {
           bookId,
           newEndDate: newEndDate.toISOString(),

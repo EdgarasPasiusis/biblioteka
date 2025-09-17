@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -6,9 +6,17 @@ const API_URL = import.meta.env.VITE_API_URL;
 const UserPage = () => {
   const [users, setUsers] = useState([]);
   const [searchEmail, setSearchEmail] = useState("");
-  const [newUser, setNewUser] = useState({ email: "", password: "", role: "user" });
+  const [newUser, setNewUser] = useState({
+    email: "",
+    password: "",
+    role: "user",
+  });
   const [editId, setEditId] = useState(null);
-  const [editData, setEditData] = useState({ email: "", password: "", role: "" });
+  const [editData, setEditData] = useState({
+    email: "",
+    password: "",
+    role: "",
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -65,26 +73,32 @@ const UserPage = () => {
     }
   };
 
-  const handleSearch = async () => {
+  const debounce = (fn, delay) => {
+    let timeoutId;
+    return (...args) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => fn(...args), delay);
+    };
+  };
+
+  const liveSearch = async (email) => {
     try {
-      if (!searchEmail.trim()) {
+      if (!email.trim()) {
         fetchUsers();
         return;
       }
-      const res = await axios.get(`${API_URL}/users/search?email=${searchEmail}`);
+      const res = await axios.get(`${API_URL}/users/search?email=${email}`);
       setUsers(res.data.rows || res.data);
     } catch (err) {
-      console.error("Search failed:", err);
+      console.error("Live search failed:", err);
     }
   };
 
-  if (loading) {
-    return <p className="text-center text-gray-400 mt-20">Loading users...</p>;
-  }
+  const handleLiveSearch = useCallback(debounce(liveSearch, 300), []);
 
-  if (error) {
-    return <p className="text-center text-red-400 mt-20">{error}</p>;
-  }
+  if (loading)
+    return <p className="text-center text-gray-400 mt-20">Loading users...</p>;
+  if (error) return <p className="text-center text-red-400 mt-20">{error}</p>;
 
   return (
     <div className="min-h-screen bg-[#242121] text-white p-6">
@@ -95,16 +109,13 @@ const UserPage = () => {
           <input
             type="text"
             value={searchEmail}
-            onChange={(e) => setSearchEmail(e.target.value)}
+            onChange={(e) => {
+              setSearchEmail(e.target.value);
+              handleLiveSearch(e.target.value);
+            }}
             placeholder="Search by email..."
             className="flex-grow p-2 rounded-lg bg-[#2a2727] text-white focus:outline-none"
           />
-          <button
-            onClick={handleSearch}
-            className="bg-cyan-600 hover:bg-cyan-700 px-4 py-2 rounded-lg font-semibold cursor-pointer"
-          >
-            Search
-          </button>
         </div>
 
         <div className="bg-[#2a2727] p-4 rounded-lg mb-6">
@@ -114,14 +125,18 @@ const UserPage = () => {
               type="text"
               placeholder="Email"
               value={newUser.email}
-              onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+              onChange={(e) =>
+                setNewUser({ ...newUser, email: e.target.value })
+              }
               className="flex-grow p-2 rounded-lg bg-[#3a3636] text-white focus:outline-none"
             />
             <input
               type="password"
               placeholder="Password"
               value={newUser.password}
-              onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+              onChange={(e) =>
+                setNewUser({ ...newUser, password: e.target.value })
+              }
               className="flex-grow p-2 rounded-lg bg-[#3a3636] text-white focus:outline-none"
             />
             <select
@@ -142,71 +157,83 @@ const UserPage = () => {
         </div>
 
         <div className="space-y-3">
-          {users.map((user) => (
-            <div
-              key={user.id}
-              className="flex flex-col sm:flex-row justify-between items-center bg-[#2a2727] p-3 rounded-lg gap-2"
-            >
-              {editId === user.id ? (
-                <div className="flex flex-col sm:flex-row gap-2 w-full">
-                  <input
-                    type="text"
-                    value={editData.email}
-                    onChange={(e) => setEditData({ ...editData, email: e.target.value })}
-                    className="flex-grow p-2 rounded-lg bg-[#3a3636] text-white"
-                  />
-                  <input
-                    type="password"
-                    placeholder="New password"
-                    value={editData.password}
-                    onChange={(e) => setEditData({ ...editData, password: e.target.value })}
-                    className="flex-grow p-2 rounded-lg bg-[#3a3636] text-white"
-                  />
-                  <select
-                    value={editData.role}
-                    onChange={(e) => setEditData({ ...editData, role: e.target.value })}
-                    className="p-2 rounded-lg bg-[#3a3636] text-white"
-                  >
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                  <button
-                    onClick={() => handleUpdate(user.id)}
-                    className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded-lg"
-                  >
-                    Save
-                  </button>
-                  <button
-                    onClick={() => setEditId(null)}
-                    className="bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded-lg"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <div className="flex flex-col text-center sm:text-left">
-                    <span className="font-semibold">{user.email}</span>
-                    <span className="text-gray-400 text-sm">Role: {user.role}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => startEdit(user)}
-                      className="bg-orange-600 hover:bg-orange-700 px-3 py-1 rounded-lg"
+          {users.length === 0 ? (
+            <p className="text-gray-400">No results found.</p>
+          ) : (
+            users.map((user) => (
+              <div
+                key={user.id}
+                className="flex flex-col sm:flex-row justify-between items-center bg-[#2a2727] p-3 rounded-lg gap-2"
+              >
+                {editId === user.id ? (
+                  <div className="flex flex-col sm:flex-row gap-2 w-full">
+                    <input
+                      type="text"
+                      value={editData.email}
+                      onChange={(e) =>
+                        setEditData({ ...editData, email: e.target.value })
+                      }
+                      className="flex-grow p-2 rounded-lg bg-[#3a3636] text-white"
+                    />
+                    <input
+                      type="password"
+                      placeholder="New password"
+                      value={editData.password}
+                      onChange={(e) =>
+                        setEditData({ ...editData, password: e.target.value })
+                      }
+                      className="flex-grow p-2 rounded-lg bg-[#3a3636] text-white"
+                    />
+                    <select
+                      value={editData.role}
+                      onChange={(e) =>
+                        setEditData({ ...editData, role: e.target.value })
+                      }
+                      className="p-2 rounded-lg bg-[#3a3636] text-white"
                     >
-                      Edit
+                      <option value="user">User</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                    <button
+                      onClick={() => handleUpdate(user.id)}
+                      className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded-lg"
+                    >
+                      Save
                     </button>
                     <button
-                      onClick={() => handleDelete(user.id)}
-                      className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded-lg"
+                      onClick={() => setEditId(null)}
+                      className="bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded-lg"
                     >
-                      Delete
+                      Cancel
                     </button>
                   </div>
-                </>
-              )}
-            </div>
-          ))}
+                ) : (
+                  <>
+                    <div className="flex flex-col text-center sm:text-left">
+                      <span className="font-semibold">{user.email}</span>
+                      <span className="text-gray-400 text-sm">
+                        Role: {user.role}
+                      </span>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => startEdit(user)}
+                        className="bg-orange-600 hover:bg-orange-700 px-3 py-1 rounded-lg"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(user.id)}
+                        className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded-lg"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

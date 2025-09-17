@@ -30,6 +30,14 @@ const AdminPanelPage = () => {
             <h2 className="text-xl font-semibold mb-2">Genres</h2>
             <p className="text-gray-400 text-sm">Add a book genre</p>
           </Link>
+
+                    <Link
+            to="/admin/reservations"
+            className="bg-[#2a2727] rounded-2xl p-6 text-center shadow-lg hover:bg-[#353131] transition-colors duration-300 cursor-pointer"
+          >
+            <h2 className="text-xl font-semibold mb-2">Reservations</h2>
+            <p className="text-gray-400 text-sm">Manage book reservations</p>
+          </Link>
         </div>
       </div>
     </div>
