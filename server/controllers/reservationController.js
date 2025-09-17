@@ -4,6 +4,7 @@ const {
   extendReservation,
   getReservationByUserAndBook,
   getReservationsByUser,
+  searchReservations,
   returnReservation
 } = require("../models/reservationModel");
 const { validationResult } = require("express-validator");
@@ -95,11 +96,26 @@ exports.returnReservation = async (req, res) => {
       return res.status(400).json({ message: "bookId is required" });
     }
 
-    const updated = await require("../models/reservationModel").returnReservation(bookId);
+    const updated = await returnReservation(bookId);
 
     res.status(200).json({
       status: "success",
       data: updated,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.searchReservations = async (req, res) => {
+  try {
+    const { title, email } = req.query;
+    const reservations = await searchReservations({ title, email });
+
+    res.status(200).json({
+      status: "success",
+      data: reservations,
     });
   } catch (err) {
     console.error(err);

@@ -5,7 +5,6 @@ const {
   getFavoritesByUser,
   checkIfFavorite,
 } = require("../models/favoritesModel");
-const { validationResult } = require("express-validator");
 
 exports.createFavorite = async (req, res) => {
   try {

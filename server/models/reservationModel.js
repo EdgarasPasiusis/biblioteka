@@ -42,11 +42,13 @@ exports.getAllReservations = async () => {
       b.author, 
       b.genre_id, 
       b.image, 
+      u.email AS user_email,
       COALESCE(AVG(rv.rating)::numeric(10,1), 0) AS rating
     FROM reservations r
     JOIN books b ON r.book_id = b.id
+    JOIN users u ON r.user_id = u.id
     LEFT JOIN reviews rv ON rv.book_id = b.id
-    GROUP BY r.id, b.id
+    GROUP BY r.id, b.id, u.id
   `;
   return reservationList;
 };
@@ -60,13 +62,15 @@ exports.getReservationsByUser = async (userId) => {
       b.genre_id, 
       b.image, 
       g.genre,
+      u.email AS user_email,
       COALESCE(AVG(rv.rating)::numeric(10,1), 0) AS rating
     FROM reservations r
     JOIN books b ON r.book_id = b.id
     JOIN genres g ON b.genre_id = g.id
+    JOIN users u ON r.user_id = u.id
     LEFT JOIN reviews rv ON rv.book_id = b.id
     WHERE r.user_id = ${userId} AND r.status = 'active'
-    GROUP BY r.id, b.id, g.id
+    GROUP BY r.id, b.id, g.id, u.id
     ORDER BY r.end_date ASC
   `;
   return reservations;
@@ -81,20 +85,20 @@ exports.getReservationByUserAndBook = async (userId, bookId) => {
       b.genre_id, 
       b.image, 
       g.genre,
+      u.email AS user_email,
       COALESCE(AVG(rv.rating)::numeric(10,1), 0) AS rating
     FROM reservations r
     JOIN books b ON r.book_id = b.id
     JOIN genres g ON b.genre_id = g.id
+    JOIN users u ON r.user_id = u.id
     LEFT JOIN reviews rv ON rv.book_id = b.id
     WHERE r.user_id = ${userId} AND r.book_id = ${bookId} AND r.status = 'active'
-    GROUP BY r.id, b.id, g.id
+    GROUP BY r.id, b.id, g.id, u.id
     LIMIT 1
   `;
   return reservations.length > 0 ? reservations[0] : null;
 };
-
 exports.returnReservation = async (bookId) => {
-  // Surandame aktyvią rezervaciją pagal knygos ID
   const [existing] = await sql`
     SELECT * FROM reservations
     WHERE book_id = ${bookId} AND status = 'active'
@@ -105,7 +109,6 @@ exports.returnReservation = async (bookId) => {
     throw new Error("Active reservation not found for this book");
   }
 
-  // Pakeičiame statusą į 'returned'
   const [updated] = await sql`
     UPDATE reservations
     SET status = 'returned'
@@ -114,4 +117,29 @@ exports.returnReservation = async (bookId) => {
   `;
 
   return updated;
+};
+
+exports.searchReservations = async ({ title, email }) => {
+  const reservations = await sql`
+    SELECT 
+      r.*, 
+      b.title, 
+      b.author, 
+      b.genre_id, 
+      b.image, 
+      g.genre,
+      u.email AS user_email,
+      COALESCE(AVG(rv.rating)::numeric(10,1), 0) AS rating
+    FROM reservations r
+    JOIN books b ON r.book_id = b.id
+    JOIN genres g ON b.genre_id = g.id
+    JOIN users u ON r.user_id = u.id
+    LEFT JOIN reviews rv ON rv.book_id = b.id
+    WHERE 
+      (${title ? sql`b.title ILIKE ${"%" + title + "%"}` : sql`TRUE`})
+      AND (${email ? sql`u.email ILIKE ${"%" + email + "%"}` : sql`TRUE`})
+    GROUP BY r.id, b.id, g.id, u.id
+    ORDER BY r.end_date ASC
+  `;
+  return reservations;
 };

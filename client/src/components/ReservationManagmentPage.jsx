@@ -42,7 +42,6 @@ const AdminReservationsPage = () => {
     }
   };
 
-  // Debounce funkcija
   const debounce = (fn, delay) => {
     let timeoutId;
     return (...args) => {
@@ -51,7 +50,6 @@ const AdminReservationsPage = () => {
     };
   };
 
-  // Live search funkcija
   const liveSearch = async (title, email) => {
     try {
       if (!title.trim() && !email.trim()) {
@@ -74,18 +72,20 @@ const AdminReservationsPage = () => {
     }
   };
 
-  // Debounce variantas live search
   const handleLiveSearch = useCallback(debounce(liveSearch, 300), []);
 
   const formatDate = (isoString) => isoString?.split("T")[0] || "";
 
   if (loading)
-    return <p className="text-center text-gray-400 mt-20">Loading reservations...</p>;
-  if (error)
-    return <p className="text-center text-red-400 mt-20">{error}</p>;
+    return (
+      <p className="text-center text-gray-400 mt-20">Loading reservations...</p>
+    );
+  if (error) return <p className="text-center text-red-400 mt-20">{error}</p>;
 
   const activeReservations = reservations.filter((r) => r.status === "active");
-  const returnedReservations = reservations.filter((r) => r.status === "returned");
+  const returnedReservations = reservations.filter(
+    (r) => r.status === "returned"
+  );
 
   const renderReservation = (r) => (
     <div
@@ -95,7 +95,8 @@ const AdminReservationsPage = () => {
       <div className="flex flex-col text-center sm:text-left">
         <span className="font-semibold">{r.title}</span>
         <span className="text-gray-400 text-sm">
-          Author: {r.author} — User: {r.user_email || "Unknown"} — Status: {r.status}
+          Author: {r.author} — User: {r.user_email || "Unknown"} — Status:{" "}
+          {r.status}
         </span>
         <span className="text-gray-400 text-sm">
           Start: {formatDate(r.start_date)} — End: {formatDate(r.end_date)}
@@ -117,7 +118,6 @@ const AdminReservationsPage = () => {
       <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Manage Reservations</h1>
 
-        {/* Paieškos laukai */}
         <div className="flex gap-2 mb-6">
           <input
             type="text"
@@ -141,7 +141,6 @@ const AdminReservationsPage = () => {
           />
         </div>
 
-        {/* Aktyvios rezervacijos */}
         <div className="mb-6">
           <h2 className="text-2xl font-bold mb-3">Active Reservations</h2>
           {activeReservations.length > 0 ? (
@@ -151,7 +150,6 @@ const AdminReservationsPage = () => {
           )}
         </div>
 
-        {/* Grąžintos rezervacijos */}
         <div className="mb-6">
           <h2 className="text-2xl font-bold mb-3">Returned Reservations</h2>
           {returnedReservations.length > 0 ? (
