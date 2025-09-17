@@ -68,7 +68,7 @@ const FavoritesPage = () => {
   }
 
   return (
-    <div className="bg-[#1a1a1a] min-h-screen text-white p-4 sm:p-8">
+    <div className="bg-[#242121] min-h-screen text-white p-4 sm:p-8">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <Link

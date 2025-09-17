@@ -8,6 +8,9 @@ import AdminPanelPage from "./components/AdminPanelPage";
 import ReservationPanelPage from "./components/ReservationPanelPage";
 import FavoritesPage from "./components/FavoritesPage";
 import { UserContextProvider } from "./contexts/UserContext";
+import CategoryManagmentPage from "./components/CategoryManagmentPage";
+import UserManagmentPage from "./components/UserManagmentPage";
+import BookManagmentPage from "./components/BookManagmentPage";
 import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
@@ -24,6 +27,9 @@ function App() {
             <Route path="/admin" element={<AdminPanelPage />} />
             <Route path="/reservations" element={<ReservationPanelPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
+            <Route path="/admin/genres" element={<CategoryManagmentPage />} />
+            <Route path="/admin/users" element={<UserManagmentPage />} />
+            <Route path="/admin/books" element={<BookManagmentPage />} />
           </Routes>
         </main>
       </div>
