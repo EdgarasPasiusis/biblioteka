@@ -8,8 +8,7 @@ exports.postBook = async (newBook) => {
         "title",
         "author",
         "description",
-        "image",
-        "rating"
+        "image"
       )}
          RETURNING *;
       `;
@@ -26,20 +25,26 @@ exports.deleteBook = async (id) => {
 };
 
 exports.updateBook = async (id, updatedBook) => {
+  const filteredBook = {};
+  ["genre_id", "title", "author", "description", "image"].forEach((key) => {
+    if (updatedBook[key] !== undefined) {
+      filteredBook[key] = updatedBook[key];
+    }
+  });
+
+  if (Object.keys(filteredBook).length === 0) return null;
+
   const book = await sql`
-    update books set ${sql(
-      updatedBook,
-      "category_id",
-      "title",
-      "author",
-      "description",
-      "image"
-    )}
-    where id = ${id}
-    returning *;
+    UPDATE books
+    SET ${sql(filteredBook)}
+    WHERE id = ${id}
+    RETURNING *;
   `;
+
   return book[0];
 };
+
+
 
 exports.getAllBooks = async () => {
   const bookList = await sql`

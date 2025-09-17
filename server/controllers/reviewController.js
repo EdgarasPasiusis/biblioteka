@@ -43,7 +43,7 @@ exports.getReviews = async (req, res, next) => {
     const reviews = await reviewModel.getReviewsByBookId(book_id);
     res.status(200).json({ status: "success", data: reviews });
   } catch (error) {
-    console.error("GetReviews error:", error);  // <- įsitikink kad turi šitą
+    console.error("GetReviews error:", error);
     next(error);
   }
 };

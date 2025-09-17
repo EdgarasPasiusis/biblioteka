@@ -1,6 +1,5 @@
 const sql = require("../utils/postgres");
 
-// Sukuria naują rezervaciją
 exports.postReservation = async (newReservation) => {
   const reservation = await sql`
     INSERT INTO reservations ${sql(
@@ -17,9 +16,7 @@ exports.postReservation = async (newReservation) => {
   return reservation[0];
 };
 
-// Pratęsia rezervaciją
 exports.extendReservation = async (userId, bookId, newEndDate) => {
-  // Patikriname ar egzistuoja rezervacija
   const existing = await sql`
     SELECT * FROM reservations
     WHERE user_id = ${userId} AND book_id = ${bookId} AND status = 'active'
@@ -37,37 +34,60 @@ exports.extendReservation = async (userId, bookId, newEndDate) => {
   return updated[0];
 };
 
-// Grąžina visas rezervacijas (galima naudoti admin puslapiui)
 exports.getAllReservations = async () => {
   const reservationList = await sql`
-    SELECT r.*, b.title, b.author, b.genre_id, b.image, b.rating
+    SELECT 
+      r.*, 
+      b.title, 
+      b.author, 
+      b.genre_id, 
+      b.image, 
+      COALESCE(AVG(rv.rating)::numeric(10,1), 0) AS rating
     FROM reservations r
     JOIN books b ON r.book_id = b.id
+    LEFT JOIN reviews rv ON rv.book_id = b.id
+    GROUP BY r.id, b.id
   `;
   return reservationList;
 };
 
-// Grąžina aktyvias rezervacijas konkrečiam vartotojui
 exports.getReservationsByUser = async (userId) => {
   const reservations = await sql`
-    SELECT r.*, b.title, b.author, b.genre_id, b.image, b.rating, g.genre
+    SELECT 
+      r.*, 
+      b.title, 
+      b.author, 
+      b.genre_id, 
+      b.image, 
+      g.genre,
+      COALESCE(AVG(rv.rating)::numeric(10,1), 0) AS rating
     FROM reservations r
     JOIN books b ON r.book_id = b.id
     JOIN genres g ON b.genre_id = g.id
+    LEFT JOIN reviews rv ON rv.book_id = b.id
     WHERE r.user_id = ${userId} AND r.status = 'active'
+    GROUP BY r.id, b.id, g.id
     ORDER BY r.end_date ASC
   `;
   return reservations;
 };
 
-// Grąžina konkrečią vartotojo ir knygos rezervaciją
 exports.getReservationByUserAndBook = async (userId, bookId) => {
   const reservations = await sql`
-    SELECT r.*, b.title, b.author, b.genre_id, b.image, b.rating, g.genre
+    SELECT 
+      r.*, 
+      b.title, 
+      b.author, 
+      b.genre_id, 
+      b.image, 
+      g.genre,
+      COALESCE(AVG(rv.rating)::numeric(10,1), 0) AS rating
     FROM reservations r
     JOIN books b ON r.book_id = b.id
     JOIN genres g ON b.genre_id = g.id
+    LEFT JOIN reviews rv ON rv.book_id = b.id
     WHERE r.user_id = ${userId} AND r.book_id = ${bookId} AND r.status = 'active'
+    GROUP BY r.id, b.id, g.id
     LIMIT 1
   `;
   return reservations.length > 0 ? reservations[0] : null;

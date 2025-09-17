@@ -9,8 +9,8 @@ const {
   getUserByID,
 } = require("../controllers/userController");
 
+router.route("/search").get(searchUsers);
 router.route("/").get(getAllUsers).post(createUser);
 router.route("/:id").put(updateUser).delete(deleteUser).get(getUserByID);
-router.route("/search").get(searchUsers);
 
 module.exports = router;
