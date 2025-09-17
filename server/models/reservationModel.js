@@ -92,3 +92,26 @@ exports.getReservationByUserAndBook = async (userId, bookId) => {
   `;
   return reservations.length > 0 ? reservations[0] : null;
 };
+
+exports.returnReservation = async (bookId) => {
+  // Surandame aktyvią rezervaciją pagal knygos ID
+  const [existing] = await sql`
+    SELECT * FROM reservations
+    WHERE book_id = ${bookId} AND status = 'active'
+    LIMIT 1
+  `;
+
+  if (!existing) {
+    throw new Error("Active reservation not found for this book");
+  }
+
+  // Pakeičiame statusą į 'returned'
+  const [updated] = await sql`
+    UPDATE reservations
+    SET status = 'returned'
+    WHERE id = ${existing.id}
+    RETURNING *;
+  `;
+
+  return updated;
+};
