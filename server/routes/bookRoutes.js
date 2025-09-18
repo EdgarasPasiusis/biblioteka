@@ -9,9 +9,11 @@ const {
   getBookByID,
   searchBook
 } = require("../controllers/bookController");
+const restrictToAdmin = require("../middleware/restrictToAdmin");
+const { protect } = require("../controllers/authController"); 
 
 router.route("/").post(postBook).get(getAllBooks);
 router.route("/search").get(searchBook);
-router.route("/:id").delete(deleteBook).put(updateBook).get(getBookByID);
+router.route("/:id").delete(protect, restrictToAdmin, deleteBook).put(updateBook).get(getBookByID);
 
 module.exports = router;

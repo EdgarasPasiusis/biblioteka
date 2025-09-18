@@ -3,7 +3,7 @@ import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const CategoryPage = () => {
+const CategoryManagmentPage = () => {
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState("");
   const [editId, setEditId] = useState(null);
@@ -132,4 +132,4 @@ const CategoryPage = () => {
   );
 };
 
-export default CategoryPage;
+export default CategoryManagmentPage;

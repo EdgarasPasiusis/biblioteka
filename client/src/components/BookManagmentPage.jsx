@@ -3,7 +3,7 @@ import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const AdminBooksPage = () => {
+const BookManagmentPage = () => {
   const [books, setBooks] = useState([]);
   const [genres, setGenres] = useState([]);
   const [searchTitle, setSearchTitle] = useState("");
@@ -66,7 +66,9 @@ const AdminBooksPage = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API_URL}/books/${id}`);
+      await axios.delete(`${API_URL}/books/${id}`,{
+        withCredentials: true
+      });
       fetchBooks();
     } catch (err) {
       console.error("Failed to delete book:", err);
@@ -303,4 +305,4 @@ const AdminBooksPage = () => {
   );
 };
 
-export default AdminBooksPage;
+export default BookManagmentPage;

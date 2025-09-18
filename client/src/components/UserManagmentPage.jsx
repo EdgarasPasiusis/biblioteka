@@ -3,7 +3,7 @@ import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const UserPage = () => {
+const UserManagmentPage = () => {
   const [users, setUsers] = useState([]);
   const [searchEmail, setSearchEmail] = useState("");
   const [newUser, setNewUser] = useState({
@@ -240,4 +240,4 @@ const UserPage = () => {
   );
 };
 
-export default UserPage;
+export default UserManagmentPage;

@@ -5,14 +5,13 @@ import SignupForm from "./components/SignupForm";
 import HomePage from "./components/HomePage";
 import BookDetail from "./components/BookDetail";
 import AdminPanelPage from "./components/AdminPanelPage";
-import ReservationPanelPage from "./components/ReservationPanelPage";
+import ReservationsPage from "./components/ReservationsPage";
 import FavoritesPage from "./components/FavoritesPage";
 import { UserContextProvider } from "./contexts/UserContext";
 import CategoryManagmentPage from "./components/CategoryManagmentPage";
 import UserManagmentPage from "./components/UserManagmentPage";
 import BookManagmentPage from "./components/BookManagmentPage";
 import ReservationManagmentPage from "./components/ReservationManagmentPage";
-import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
   return (
@@ -26,7 +25,7 @@ function App() {
             <Route path="/auth/signup" element={<SignupForm />} />
             <Route path="/books/:id" element={<BookDetail />} />
             <Route path="/admin" element={<AdminPanelPage />} />
-            <Route path="/reservations" element={<ReservationPanelPage />} />
+            <Route path="/reservations" element={<ReservationsPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/admin/genres" element={<CategoryManagmentPage />} />
             <Route path="/admin/users" element={<UserManagmentPage />} />

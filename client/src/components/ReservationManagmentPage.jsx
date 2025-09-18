@@ -3,7 +3,7 @@ import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const AdminReservationsPage = () => {
+const ReservationManagmentPage = () => {
   const [reservations, setReservations] = useState([]);
   const [searchTitle, setSearchTitle] = useState("");
   const [searchEmail, setSearchEmail] = useState("");
@@ -163,4 +163,4 @@ const AdminReservationsPage = () => {
   );
 };
 
-export default AdminReservationsPage;
+export default ReservationManagmentPage;
