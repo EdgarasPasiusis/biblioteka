@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 const API_URL = import.meta.env.VITE_API_URL;
 
 const SignupForm = () => {
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { setuser } = useContext(UserContext);
   const navigate = useNavigate();
@@ -15,8 +14,12 @@ const SignupForm = () => {
   const {
     register,
     handleSubmit,
+    setError,
+    watch,
     formState: { errors },
   } = useForm();
+
+  const password = watch("password");
 
   const onSubmit = async (formdata) => {
     setLoading(true);
@@ -25,10 +28,22 @@ const SignupForm = () => {
         withCredentials: true,
       });
       setuser(response.data.data);
-      setError("");
       navigate("/");
     } catch (error) {
-      setError(error.response?.data?.message || "Signup failed");
+      const serverErrors = error.response?.data?.errors;
+      if (Array.isArray(serverErrors)) {
+        serverErrors.forEach((err) => {
+          setError(err.field, {
+            type: "server",
+            message: err.message,
+          });
+        });
+      } else {
+        setError("root", {
+          type: "server",
+          message: error.response?.data?.message || "Signup failed",
+        });
+      }
       setuser(null);
     } finally {
       setLoading(false);
@@ -44,13 +59,9 @@ const SignupForm = () => {
           </h2>
         </div>
 
-        {error && (
-          <div className="bg-red-50 border-l-4 border-red-700 p-4">
-            <div className="flex">
-              <div className="ml-3">
-                <p className="text-sm text-red-700">{error}</p>
-              </div>
-            </div>
+        {errors.root && (
+          <div className="bg-red-50 border-l-4 border-red-700 p-4 mb-4">
+            <p className="text-sm text-red-700">{errors.root.message}</p>
           </div>
         )}
 
@@ -65,6 +76,7 @@ const SignupForm = () => {
               </label>
               <input
                 id="email"
+                type="email"
                 {...register("email", {
                   required: "Email is required",
                   pattern: {
@@ -72,7 +84,6 @@ const SignupForm = () => {
                     message: "Invalid email address",
                   },
                 })}
-                type="email"
                 className="input-field mt-1 placeholder:text-gray-600 rounded-md shadow-sm w-full text-white"
                 placeholder="Email address"
               />
@@ -90,20 +101,54 @@ const SignupForm = () => {
               </label>
               <input
                 id="password"
+                type="password"
                 {...register("password", {
                   required: "Password is required",
                   minLength: {
-                    value: 6,
-                    message: "Password must be at least 6 characters",
+                    value: 8,
+                    message: "Password must be at least 8 characters long",
+                  },
+                  validate: {
+                    hasNumber: (v) =>
+                      /\d/.test(v) ||
+                      "Password must contain at least one number",
+                    hasSpecial: (v) =>
+                      /[^A-Za-z0-9]/.test(v) ||
+                      "Password must contain at least one special character",
                   },
                 })}
-                type="password"
                 className="input-field mt-1 placeholder:text-gray-600 rounded-md shadow-sm w-full text-white"
                 placeholder="Password"
               />
               {errors.password && (
                 <p className="text-red-500 text-sm">
                   {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label
+                htmlFor="passwordconfirm"
+                className="block text-sm font-medium text-gray-400"
+              >
+                Confirm password
+              </label>
+              <input
+                id="passwordconfirm"
+                type="password"
+                {...register("passwordconfirm", {
+                  required: "Password confirmation is required",
+                  validate: (value) =>
+                    value === password ||
+                    "Password and confirmation do not match",
+                })}
+                className="input-field mt-1 placeholder:text-gray-600 rounded-md shadow-sm w-full text-white"
+                placeholder="Confirm password"
+              />
+              {errors.passwordconfirm && (
+                <p className="text-red-500 text-sm">
+                  {errors.passwordconfirm.message}
                 </p>
               )}
             </div>
