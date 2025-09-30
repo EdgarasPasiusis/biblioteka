@@ -14,6 +14,7 @@ const validateLogin = [
       if (!user) {
         throw new Error("User not found, please sign up");
       }
+      req.user = user;
       return true;
     }),
 
@@ -21,10 +22,10 @@ const validateLogin = [
     .notEmpty()
     .withMessage("Password is required")
     .custom(async (value, { req }) => {
-      const user = await getUserByEmail(req.body.email);
+      const user = req.user;
       if (user) {
         const match = await argon2.verify(user.password, value);
-        if (!user || !match) {
+        if (!match) {
           throw new Error("Password is incorrect");
         }
       }

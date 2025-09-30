@@ -1,4 +1,8 @@
-const { createUser, getUserByEmail, getUserById } = require("../models/authModel");
+const {
+  createUser,
+  getUserByEmail,
+  getUserById,
+} = require("../models/authModel");
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
 const AppError = require("../utils/AppError");
@@ -23,20 +27,24 @@ const sendCookie = (token, res) => {
 
 exports.signup = async (req, res, next) => {
   try {
-    const newUser = req.body;
+    const { email, password } = req.body;
 
-    const hash = await argon2.hash(newUser.password);
-    newUser.password = hash;
-    newUser.passwordconfirm = undefined;
+    const hash = await argon2.hash(password);
+    const newUser = { email, password: hash };
 
     const createdUser = await createUser(newUser);
 
-    if (!createUser) throw AppError("User not created", 400);
+    if (!createdUser) {
+      return res.status(400).json({
+        status: "fail",
+        errors: [{ field: "root", message: "User not created" }],
+      });
+    }
 
     const token = signToken(createdUser.id);
     sendCookie(token, res);
 
-    createUser.password = undefined;
+    createdUser.password = undefined;
 
     res.status(201).json({
       status: "success",

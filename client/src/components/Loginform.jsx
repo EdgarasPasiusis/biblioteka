@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 const API_URL = import.meta.env.VITE_API_URL;
 
 const LoginForm = () => {
-  const [error, setError] = useState("");
+  const [generalError, setGeneralError] = useState("");
   const [loading, setLoading] = useState(false);
   const { setuser } = useContext(UserContext);
   const navigate = useNavigate();
@@ -15,6 +15,7 @@ const LoginForm = () => {
   const {
     register,
     handleSubmit,
+    setError, // 👈 papildomai iš useForm
     formState: { errors },
   } = useForm();
 
@@ -25,10 +26,22 @@ const LoginForm = () => {
         withCredentials: true,
       });
       setuser(response.data.data);
-      setError("");
+      setGeneralError("");
       navigate("/");
     } catch (error) {
-      setError(error.response?.data?.message || "Login failed");
+      const apiErrors = error.response?.data?.errors;
+
+      if (apiErrors && Array.isArray(apiErrors)) {
+        // jei backend gražino klaidų masyvą
+        apiErrors.forEach((err) => {
+          setError(err.field, { message: err.message });
+        });
+        setGeneralError(""); // bendros klaidos neberodom
+      } else {
+        // fallback bendram pranešimui
+        setGeneralError(error.response?.data?.message || "Login failed");
+      }
+
       setuser(null);
     } finally {
       setLoading(false);
@@ -44,18 +57,15 @@ const LoginForm = () => {
           </h2>
         </div>
 
-        {error && (
+        {generalError && (
           <div className="bg-red-50 border-l-4 border-red-500 p-4">
-            <div className="flex">
-              <div className="ml-3">
-                <p className="text-sm text-red-700">{error}</p>
-              </div>
-            </div>
+            <p className="text-sm text-red-700">{generalError}</p>
           </div>
         )}
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-4">
+            {/* Email field */}
             <div>
               <label
                 htmlFor="email"
@@ -75,6 +85,8 @@ const LoginForm = () => {
                 <p className="text-red-800 text-sm">{errors.email.message}</p>
               )}
             </div>
+
+            {/* Password field */}
             <div>
               <label
                 htmlFor="password"

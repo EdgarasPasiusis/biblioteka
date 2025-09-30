@@ -21,7 +21,7 @@ exports.getUserByEmail = async (email) => {
         WHERE users.email = ${email}
         LIMIT 1;
     `;
-    return users[0];
+    return users.length ? users[0] : undefined;
 };
 
 exports.getUserById = async (id) => {
