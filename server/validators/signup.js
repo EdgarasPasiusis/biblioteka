@@ -65,6 +65,10 @@ const validateSignup = [
       }
       return true;
     }),
+
+  body("passwordconfirm")
+    .notEmpty()
+    .withMessage("Password confirmation in required"),
 ];
 
 module.exports = { validateSignup };
