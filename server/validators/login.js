@@ -9,12 +9,12 @@ const validateLogin = [
     .isEmail()
     .withMessage("Email is invalid")
     .normalizeEmail()
-    .custom(async (value, { req }) => { // Add { req } here
+    .custom(async (value, { req }) => {
       const user = await getUserByEmail(value);
       if (!user) {
         throw new Error("User or password is incorrect");
       }
-      req.user = user; // Now req is defined
+      req.user = user;
       return true;
     }),
 
@@ -22,7 +22,6 @@ const validateLogin = [
     .notEmpty()
     .withMessage("Password is required")
     .custom(async (value, { req }) => {
-      // This now works because the previous validator set req.user
       const user = req.user;
       if (user) {
         const match = await argon2.verify(user.password, value);

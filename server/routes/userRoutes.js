@@ -8,9 +8,18 @@ const {
   searchUsers,
   getUserByID,
 } = require("../controllers/userController");
+const restrictToAdmin = require("../middleware/restrictToAdmin");
+const { protect } = require("../controllers/authController");
 
-router.route("/search").get(searchUsers);
-router.route("/").get(getAllUsers).post(createUser);
-router.route("/:id").put(updateUser).delete(deleteUser).get(getUserByID);
+router.route("/search").get(protect, restrictToAdmin, searchUsers);
+router
+  .route("/")
+  .get(protect, restrictToAdmin, getAllUsers)
+  .post(protect, restrictToAdmin, createUser);
+router
+  .route("/:id")
+  .put(protect, restrictToAdmin, updateUser)
+  .delete(protect, restrictToAdmin, deleteUser)
+  .get(protect, restrictToAdmin, getUserByID);
 
 module.exports = router;

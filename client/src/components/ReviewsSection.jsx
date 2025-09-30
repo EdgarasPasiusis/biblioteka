@@ -39,11 +39,23 @@ const ReviewsSection = ({ bookId }) => {
       console.log("Reviews response:", res.data);
     } catch (err) {
       console.error("Failed to fetch reviews:", err);
-      setError("Nepavyko užkrauti atsiliepimų.");
+      setError("Failed to load reviews.");
     } finally {
       setLoading(false);
     }
   }, [bookId]);
+
+  const handleDeleteReview = async (reviewId) => {
+    try {
+      await axios.delete(`${API_URL}/reviews/${reviewId}`, {
+        withCredentials: true
+      });
+      fetchReviews();
+    } catch (err) {
+      console.error("Failed to delete review:", err);
+      alert("Failed to delete review");
+    }
+  };
 
   useEffect(() => {
     fetchReviews();
@@ -73,7 +85,17 @@ const ReviewsSection = ({ bookId }) => {
             <div key={review.id} className="bg-[#2a2727] p-6 rounded-lg shadow-md">
               <div className="flex items-center justify-between mb-3">
                 <p className="font-bold text-cyan-400 text-lg">{review.email}</p>
-                <StarRating rating={review.rating} />
+                <div className="flex items-center gap-4">
+                  <StarRating rating={review.rating} />
+                  {user?.role === 'admin' && (
+                    <button
+                      onClick={() => handleDeleteReview(review.id)}
+                      className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
               </div>
               <p className="text-gray-300 leading-relaxed">{review.comment}</p>
               <p className="text-right text-xs text-gray-500 mt-4">
