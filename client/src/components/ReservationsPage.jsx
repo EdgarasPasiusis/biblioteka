@@ -21,8 +21,7 @@ const ReservationsPage = () => {
         });
         setReservations(res.data.data || []);
       } catch (err) {
-        console.error("Failed to load reservations:", err);
-        setError("Failed to load reservations.");
+        setError(err.response?.data?.message || "Failed to load reservations.");
       } finally {
         setLoading(false);
       }
@@ -57,8 +56,7 @@ const ReservationsPage = () => {
         )
       );
     } catch (err) {
-      console.error("Failed to extend reservation:", err);
-      alert(err.response?.data?.message || "Failed to extend reservation!");
+      setError(err.response?.data?.message || "Failed to extend reservation.");
     }
   };
 
@@ -74,10 +72,6 @@ const ReservationsPage = () => {
     return (
       <p className="text-center text-gray-400 mt-20">Loading reservations...</p>
     );
-  }
-
-  if (error) {
-    return <p className="text-center text-red-400 mt-20">{error}</p>;
   }
 
   if (reservations.length === 0) {
@@ -101,6 +95,12 @@ const ReservationsPage = () => {
         </div>
 
         <h1 className="text-3xl font-bold mb-6">My Reservations</h1>
+
+        {error && (
+          <div className="bg-red-900/80 border border-red-600 text-red-200 p-4 rounded-lg mb-6 text-center">
+            {error}
+          </div>
+        )}
 
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
           {reservations.map((resv) => (

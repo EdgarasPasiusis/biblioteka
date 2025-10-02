@@ -31,9 +31,9 @@ const BookManagmentPage = () => {
       setLoading(true);
       const res = await axios.get(`${API_URL}/books`);
       setBooks(res.data.tours || res.data.data || []);
+      setError(null);
     } catch (err) {
-      console.error("Failed to fetch books:", err);
-      setError("Failed to load books.");
+      setError(err.response?.data?.message || "Failed to load books.");
     } finally {
       setLoading(false);
     }
@@ -43,8 +43,9 @@ const BookManagmentPage = () => {
     try {
       const res = await axios.get(`${API_URL}/genres`);
       setGenres(res.data.tours || res.data.data || []);
+      setError(null);
     } catch (err) {
-      console.error("Failed to fetch genres:", err);
+      setError(err.response?.data?.message || "Failed to load genres.");
     }
   };
 
@@ -59,8 +60,9 @@ const BookManagmentPage = () => {
       await axios.post(`${API_URL}/books`, newBook);
       setNewBook({ title: "", author: "", description: "", image: "", genre_id: "" });
       fetchBooks();
+      setError(null);
     } catch (err) {
-      console.error("Failed to add book:", err);
+       setError(err.response?.data?.message || "Failed to add book.");
     }
   };
 
@@ -70,8 +72,9 @@ const BookManagmentPage = () => {
         withCredentials: true
       });
       fetchBooks();
+      setError(null);
     } catch (err) {
-      console.error("Failed to delete book:", err);
+       setError(err.response?.data?.message || "Failed to load delete book.");
     }
   };
 
@@ -97,8 +100,9 @@ const BookManagmentPage = () => {
       setEditId(null);
       setEditData({ title: "", author: "", description: "", image: "", genre_id: "" });
       fetchBooks();
+      setError(null);
     } catch (err) {
-      console.error("Failed to update book:", err);
+      setError(err.response?.data?.message || "Failed to update book.");
     }
   };
   
@@ -123,20 +127,26 @@ const BookManagmentPage = () => {
 
       const res = await axios.get(`${API_URL}/books/search?${params.toString()}`);
       setBooks(res.data.data || []);
+      setError(null);
     } catch (err) {
-      console.error("Live search failed:", err);
+       setError(err.response?.data?.message || "Live search failed.");
     }
   };
 
   const handleLiveSearch = useCallback(debounce(liveSearch, 300), []);
 
   if (loading) return <p className="text-center text-gray-400 mt-20">Loading books...</p>;
-  if (error) return <p className="text-center text-red-400 mt-20">{error}</p>;
 
   return (
     <div className="min-h-screen bg-[#242121] text-white p-6">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Manage Books</h1>
+
+        {error && (
+          <div className="bg-red-900/80 border border-red-600 text-red-200 p-4 rounded-lg mb-6 text-center">
+            {error}
+          </div>
+        )}
 
         <div className="flex gap-2 mb-6">
           <input

@@ -13,14 +13,13 @@ const AddReview = ({ bookId, onReviewAdded }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (rating === 0) {
-      setError("Prašome pasirinkti reitingą.");
+      setError("Choose a rating.");
       return;
     }
     if (!comment.trim()) {
-      setError("Prašome parašyti komentarą.");
+      setError("Please leave a comment.");
       return;
     }
-
     setIsSubmitting(true);
     setError("");
 
@@ -34,8 +33,11 @@ const AddReview = ({ bookId, onReviewAdded }) => {
       setComment("");
       onReviewAdded();
     } catch (err) {
-      console.error("Failed to post review:", err);
-      setError("Failed to leave review");
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Failed to post review, try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }

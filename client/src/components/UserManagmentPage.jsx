@@ -26,8 +26,7 @@ const UserManagmentPage = () => {
       const res = await axios.get(`${API_URL}/users`);
       setUsers(res.data.data);
     } catch (err) {
-      console.error("Failed to fetch users:", err);
-      setError("Failed to load users.");
+      setError(err.response?.data?.message || "Failed to load users.");
     } finally {
       setLoading(false);
     }
@@ -44,7 +43,7 @@ const UserManagmentPage = () => {
       setNewUser({ email: "", password: "", role: "user" });
       fetchUsers();
     } catch (err) {
-      console.error("Failed to add user:", err);
+      setError(err.response?.data?.message || "Failed to add user.");
     }
   };
 
@@ -53,7 +52,7 @@ const UserManagmentPage = () => {
       await axios.delete(`${API_URL}/users/${id}`);
       fetchUsers();
     } catch (err) {
-      console.error("Failed to delete user:", err);
+      setError(err.response?.data?.message || "Failed to delete user.");
     }
   };
 
@@ -69,7 +68,7 @@ const UserManagmentPage = () => {
       setEditData({ email: "", password: "", role: "" });
       fetchUsers();
     } catch (err) {
-      console.error("Failed to update user:", err);
+      setError(err.response?.data?.message || "Failed to update user.");
     }
   };
 
@@ -90,7 +89,7 @@ const UserManagmentPage = () => {
       const res = await axios.get(`${API_URL}/users/search?email=${email}`);
       setUsers(res.data.rows || res.data);
     } catch (err) {
-      console.error("Live search failed:", err);
+      setError(err.response?.data?.message || "Live search failed.");
     }
   };
 
@@ -98,12 +97,17 @@ const UserManagmentPage = () => {
 
   if (loading)
     return <p className="text-center text-gray-400 mt-20">Loading users...</p>;
-  if (error) return <p className="text-center text-red-400 mt-20">{error}</p>;
 
   return (
     <div className="min-h-screen bg-[#242121] text-white p-6">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Manage Users</h1>
+
+        {error && (
+          <div className="bg-red-900/80 border border-red-600 text-red-200 p-4 rounded-lg mb-6 text-center">
+            {error}
+          </div>
+        )}
 
         <div className="flex gap-2 mb-6">
           <input

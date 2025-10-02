@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import BooksGrid from "./BooksGird";
 import axios from "axios";
 
@@ -7,6 +7,8 @@ const API_URL = import.meta.env.VITE_API_URL;
 const MainPage = () => {
   const [selectedGenre, setSelectedGenre] = useState("All Books");
   const [genres, setGenres] = useState(["All Books"]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
 useEffect(() => {
   const fetchGenres = async () => {
@@ -15,12 +17,34 @@ useEffect(() => {
       const dbGenres = res.data.tours || [];
       setGenres(["All Books", ...dbGenres.map((g) => g.genre)]);
     } catch (err) {
-      console.error("Failed to load genres", err);
+      setError(err.response?.data?.message || "Failed to load genres.");
+    } finally {
+      setLoading(false);
     }
   };
 
   fetchGenres();
 }, []);
+
+if (loading) {
+    return (
+      <div className="min-h-screen bg-[#242121] flex items-center justify-center">
+        <p className="text-gray-400">Loading genres...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#242121] flex items-center justify-center p-4">
+        <div className="bg-red-900/40 border border-red-700 text-red-300 px-6 py-4 rounded-xl shadow-lg text-center max-w-md">
+          <h2 className="text-lg font-bold mb-2">Oops! Something went wrong</h2>
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="min-h-screen bg-[#242121] text-white p-6">

@@ -27,8 +27,7 @@ const BookDetail = () => {
         const res = await axios.get(`${API_URL}/books/${id}`);
         setBook(res.data.data);
       } catch (err) {
-        console.error("Failed to get book details:", err);
-        setError("Failed to load book details.");
+        setError(err.response?.data?.message || "Failed to load book details.");
       } finally {
         setLoading(false);
       }
@@ -46,7 +45,9 @@ const BookDetail = () => {
         });
         setReservation(res.data.data);
       } catch (err) {
-        console.error("Failed to check reservation:", err);
+        setError(
+          err.response?.data?.message || "Failed to check reservations."
+        );
         setReservation(null);
       }
     };
@@ -59,7 +60,7 @@ const BookDetail = () => {
         });
         setIsFavorite(res.data.isFavorite);
       } catch (err) {
-        console.error("Failed to check favorites:", err);
+        setError(err.response?.data?.message || "Failed to check favorites.");
       }
     };
 
@@ -81,8 +82,7 @@ const BookDetail = () => {
       setReservation(res.data.data);
       setShowDatePicker(false);
     } catch (err) {
-      console.error("Failed to reserve book:", err);
-      alert(err.response?.data?.message || "Reservation failed!");
+      setError(err.response?.data?.message || "Reservation failed.");
     }
   };
   const handleExtend = async () => {
@@ -104,7 +104,7 @@ const BookDetail = () => {
       );
       setReservation(res.data.data);
     } catch (err) {
-      console.error("Failed to extend reservation:", err);
+      setError(err.response?.data?.message || "Failed to extend reservation.");
     }
   };
 
@@ -117,7 +117,7 @@ const BookDetail = () => {
       );
       setIsFavorite(true);
     } catch (err) {
-      console.error("Failed to add favorite:", err);
+      setError(err.response?.data?.message || "Failed to add favorite.");
     }
   };
 
@@ -128,7 +128,7 @@ const BookDetail = () => {
       });
       setIsFavorite(false);
     } catch (err) {
-      console.error("Failed to remove favorite:", err);
+      setError(err.response?.data?.message || "Failed to remove favorite.");
     }
   };
 
@@ -136,10 +136,6 @@ const BookDetail = () => {
     return (
       <p className="text-center text-gray-400 mt-20">Loading book details...</p>
     );
-  }
-
-  if (error) {
-    return <p className="text-center text-red-400 mt-20">{error}</p>;
   }
 
   if (!book) {
@@ -157,6 +153,12 @@ const BookDetail = () => {
             &larr; Back to Library
           </Link>
         </div>
+
+        {error && (
+          <div className="bg-red-900/80 border border-red-600 text-red-200 p-4 rounded-lg mb-6 text-center">
+            {error}
+          </div>
+        )}
 
         <div className="bg-[#2a2727] rounded-lg shadow-lg overflow-hidden md:flex">
           <div className="md:w-1/3">

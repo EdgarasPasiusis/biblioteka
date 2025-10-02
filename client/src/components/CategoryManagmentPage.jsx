@@ -8,13 +8,15 @@ const CategoryManagmentPage = () => {
   const [newCategory, setNewCategory] = useState("");
   const [editId, setEditId] = useState(null);
   const [editValue, setEditValue] = useState("");
+  const [error, setError] = useState(null);
 
   const fetchCategories = async () => {
     try {
       const res = await axios.get(`${API_URL}/genres`);
       setCategories(res.data.tours);
+      setError(null);
     } catch (err) {
-      console.error("Failed to fetch genres:", err);
+      setError(err.response?.data?.message || "Failed to fetch genres.");
     }
   };
 
@@ -29,7 +31,7 @@ const CategoryManagmentPage = () => {
       setNewCategory("");
       fetchCategories();
     } catch (err) {
-      console.error("Failed to add genres:", err);
+      setError(err.response?.data?.message || "Failed to add genre.");
     }
   };
 
@@ -38,7 +40,7 @@ const CategoryManagmentPage = () => {
       await axios.delete(`${API_URL}/genres/${id}`);
       fetchCategories();
     } catch (err) {
-      console.error("Failed to delete genres:", err);
+      setError(err.response?.data?.message || "Failed to delete genre.");
     }
   };
 
@@ -50,7 +52,7 @@ const CategoryManagmentPage = () => {
       setEditValue("");
       fetchCategories();
     } catch (err) {
-      console.error("Failed to update genres:", err);
+      setError(err.response?.data?.message || "Failed to update genre.");
     }
   };
 
@@ -58,6 +60,12 @@ const CategoryManagmentPage = () => {
     <div className="min-h-screen bg-[#242121] text-white p-6">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Manage Genres</h1>
+
+        {error && (
+          <div className="bg-red-900/80 border border-red-600 text-red-200 p-4 rounded-lg mb-6 text-center">
+            {error}
+          </div>
+        )}
 
         <div className="flex gap-2 mb-6">
           <input

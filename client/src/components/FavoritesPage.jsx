@@ -20,9 +20,9 @@ const FavoritesPage = () => {
           withCredentials: true,
         });
         setFavorites(res.data.data || []);
+        setError(null);
       } catch (err) {
-        console.error("Failed to load favorites:", err);
-        setError("Failed to load favorites.");
+        setError(err.response?.data?.message || "Failed to load favorites.");
       } finally {
         setLoading(false);
       }
@@ -37,7 +37,7 @@ const FavoritesPage = () => {
       });
       setFavorites((prev) => prev.filter((fav) => fav.book_id !== bookId));
     } catch (err) {
-      console.error("Failed to remove favorite:", err);
+      setError(err.response?.data?.message || "Failed to remove favorite.");
     }
   };
 
@@ -53,10 +53,6 @@ const FavoritesPage = () => {
     return (
       <p className="text-center text-gray-400 mt-20">Loading favorites...</p>
     );
-  }
-
-  if (error) {
-    return <p className="text-center text-red-400 mt-20">{error}</p>;
   }
 
   if (favorites.length === 0) {
@@ -78,6 +74,12 @@ const FavoritesPage = () => {
             &larr; Back to Library
           </Link>
         </div>
+
+        {error && (
+          <div className="bg-red-900/80 border border-red-600 text-red-200 p-4 rounded-lg mb-6 text-center">
+            {error}
+          </div>
+        )}
 
         <h1 className="text-3xl font-bold mb-6">My Favorites</h1>
 

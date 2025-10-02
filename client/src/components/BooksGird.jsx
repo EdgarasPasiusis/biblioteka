@@ -9,7 +9,7 @@ const BooksGrid = ({ selectedGenre }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -17,9 +17,9 @@ const navigate = useNavigate();
         const res = await axios.get(`${API_URL}/books`);
 
         setBooks(res.data.tours || []);
+        setError(null);
       } catch (err) {
-        console.error("Failed to get books:", err);
-        setError("Failed to load books");
+        setError(err.response?.data?.message || "Failed to load books.");
       } finally {
         setLoading(false);
       }
@@ -39,12 +39,13 @@ const navigate = useNavigate();
     return <p className="text-center text-gray-400">Loading...</p>;
   }
 
-  if (error) {
-    return <p className="text-center text-red-400">{error}</p>;
-  }
-
   return (
     <div className="px-6 pb-10">
+      {error && (
+        <div className="bg-red-900/80 border border-red-600 text-red-200 p-4 rounded-lg mb-6 text-center">
+          {error}
+        </div>
+      )}
       {filteredBooks.length === 0 ? (
         <p className="text-center text-gray-400">No books found</p>
       ) : (

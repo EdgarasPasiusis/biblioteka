@@ -36,10 +36,8 @@ const ReviewsSection = ({ bookId }) => {
     try {
       const res = await axios.get(`${API_URL}/reviews/book/${bookId}`);
       setReviews(res.data.data);
-      console.log("Reviews response:", res.data);
     } catch (err) {
-      console.error("Failed to fetch reviews:", err);
-      setError("Failed to load reviews.");
+      setError(err.response?.data?.message || "Failed to load reviews.");
     } finally {
       setLoading(false);
     }
@@ -52,8 +50,7 @@ const ReviewsSection = ({ bookId }) => {
       });
       fetchReviews();
     } catch (err) {
-      console.error("Failed to delete review:", err);
-      alert("Failed to delete review");
+      setError(err.response?.data?.message || "Failed to delete review.");
     }
   };
 
@@ -61,15 +58,17 @@ const ReviewsSection = ({ bookId }) => {
     fetchReviews();
   }, [fetchReviews]);
 
-  if (error) {
-    return <p className="text-center text-red-400 mt-8">{error}</p>;
-  }
-
   return (
     <div className="mt-12">
       <h2 className="text-2xl font-bold text-white mb-6 border-b-2 border-gray-700 pb-2">
         Reviews
       </h2>
+
+      {error && (
+          <div className="bg-red-900/80 border border-red-600 text-red-200 p-4 rounded-lg mb-6 text-center">
+            {error}
+          </div>
+        )}
 
       {user && <AddReview bookId={bookId} onReviewAdded={fetchReviews} />}
 

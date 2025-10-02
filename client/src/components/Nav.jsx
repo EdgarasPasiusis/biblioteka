@@ -14,6 +14,7 @@ const Nav = () => {
   const [loading, setLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -52,7 +53,7 @@ const Nav = () => {
       });
       setBooks(res.data.data || []);
     } catch (err) {
-      console.error("Search failed:", err);
+      setError(err.response?.data?.message || "Search failed.");
     } finally {
       setLoading(false);
     }
@@ -93,7 +94,9 @@ const Nav = () => {
               <div className="absolute top-full left-0 w-full bg-[#2c2c2c] mt-2 rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
                 {loading ? (
                   <div className="p-2 text-gray-400">Loading...</div>
-                ) : books.length > 0 ? (
+                ) : error ? (
+                  <div className="p-2 text-red-400">{error}</div>
+                ) : (
                   books.map((book) => (
                     <NavLink
                       key={book.id}
@@ -101,12 +104,9 @@ const Nav = () => {
                       onClick={() => setShowDropdown(false)}
                       className="block px-4 py-2 text-gray-200 hover:bg-gray-700"
                     >
-                      {book.title} –{" "}
-                      <span className="text-gray-400">{book.author}</span>
+                      {book.title} – <span className="text-gray-400">{book.author}</span>
                     </NavLink>
                   ))
-                ) : (
-                  <div className="p-2 text-gray-400">No results found</div>
                 )}
               </div>
             )}

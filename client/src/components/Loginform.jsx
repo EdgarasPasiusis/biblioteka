@@ -15,7 +15,7 @@ const LoginForm = () => {
   const {
     register,
     handleSubmit,
-    setError, // 👈 papildomai iš useForm
+    setError,
     formState: { errors },
   } = useForm();
 
@@ -32,13 +32,11 @@ const LoginForm = () => {
       const apiErrors = error.response?.data?.errors;
 
       if (apiErrors && Array.isArray(apiErrors)) {
-        // jei backend gražino klaidų masyvą
         apiErrors.forEach((err) => {
           setError(err.field, { message: err.message });
         });
-        setGeneralError(""); // bendros klaidos neberodom
+        setGeneralError("");
       } else {
-        // fallback bendram pranešimui
         setGeneralError(error.response?.data?.message || "Login failed");
       }
 
@@ -65,7 +63,6 @@ const LoginForm = () => {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-4">
-            {/* Email field */}
             <div>
               <label
                 htmlFor="email"
@@ -86,7 +83,6 @@ const LoginForm = () => {
               )}
             </div>
 
-            {/* Password field */}
             <div>
               <label
                 htmlFor="password"

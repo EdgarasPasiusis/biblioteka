@@ -18,8 +18,7 @@ const ReservationManagmentPage = () => {
       });
       setReservations(res.data.tours || []);
     } catch (err) {
-      console.error("Failed to load reservations:", err);
-      setError("Failed to load reservations");
+      setError(err.response?.data?.message || "Failed to load reservations.");
     } finally {
       setLoading(false);
     }
@@ -38,7 +37,7 @@ const ReservationManagmentPage = () => {
       );
       fetchReservations();
     } catch (err) {
-      console.error("Failed to mark returned:", err);
+      setError(err.response?.data?.message || "Failed to mark a return.");
     }
   };
 
@@ -67,8 +66,11 @@ const ReservationManagmentPage = () => {
       });
 
       setReservations(res.data.data || []);
+      if ((res.data.data || []).length === 0) {
+        setError("No reservations found.");
+      }
     } catch (err) {
-      console.error("Live search failed:", err);
+      setError(err.response?.data?.message || "Live search failed.");
     }
   };
 
@@ -80,7 +82,6 @@ const ReservationManagmentPage = () => {
     return (
       <p className="text-center text-gray-400 mt-20">Loading reservations...</p>
     );
-  if (error) return <p className="text-center text-red-400 mt-20">{error}</p>;
 
   const activeReservations = reservations.filter((r) => r.status === "active");
   const returnedReservations = reservations.filter(
@@ -117,6 +118,12 @@ const ReservationManagmentPage = () => {
     <div className="min-h-screen bg-[#242121] text-white p-6">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Manage Reservations</h1>
+
+        {error && (
+          <div className="bg-red-900/80 border border-red-600 text-red-200 p-4 rounded-lg mb-6 text-center">
+            {error}
+          </div>
+        )}
 
         <div className="flex gap-2 mb-6">
           <input
